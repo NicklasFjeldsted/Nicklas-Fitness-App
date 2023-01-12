@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ky4gr7mttPqG0zopVioNvy9mqv4guE0rDtFD0QWfsQF+ECib/t540rZ1/iFfrySlG/3GXC3RI6PRu2fjPawiBQ==",
+  "dgSpecHash": "EEAOeKLukToVwqB8gjPSeXKX46i/2m15+gub2oXfZsN32CLNYeE3ZoCymhX3QFSnAkcRb22dmzW9vxEFWa0GQw==",
   "success": true,
   "projectFilePath": "C:\\Users\\nfo\\Desktop\\Nicklas-Fitness-App\\FitnessWebApi\\FitnessWebApi\\FitnessWebApi.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\nfo\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\nfo\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\nfo\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\nfo\\.nuget\\packages\\bcrypt.net\\0.1.0\\bcrypt.net.0.1.0.nupkg.sha512",

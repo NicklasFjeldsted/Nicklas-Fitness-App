@@ -9,6 +9,12 @@ namespace FitnessWebApi.Database
 		#region Generated Properties
 		public virtual DbSet<Gender> Gender { get; set; }
 		public virtual DbSet<User> User { get; set; }
+		public virtual DbSet<MealTime> MealTime { get; set; }
+		public virtual DbSet<Product> Product { get; set; }
+		public virtual DbSet<SizedProduct> SizedProduct { get; set; }
+		public virtual DbSet<UserMeal> UserMeal { get; set; }
+		public virtual DbSet<UserPlan> UserPlan { get; set; }
+		public virtual DbSet<UserRecipe> UserRecipe { get; set; }
 		#endregion
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,6 +24,11 @@ namespace FitnessWebApi.Database
 			{
 				e.HasIndex(e => e.Email).IsUnique();
 				e.Property(e => e.Created_At).HasDefaultValueSql("getdate()");
+			});
+
+			modelBuilder.Entity<Product>(e =>
+			{
+				e.HasIndex(e => e.ProductCode).IsUnique();
 			});
 			#endregion
 
