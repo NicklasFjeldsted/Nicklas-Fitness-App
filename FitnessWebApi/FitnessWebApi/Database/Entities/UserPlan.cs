@@ -12,7 +12,6 @@
 		public double WeightGoal { get; set; }
 
 		public int ActivityLevelID { get; set; }
-
 		public ActivityLevel ActivityLevel { get; set; }
 	}
 }

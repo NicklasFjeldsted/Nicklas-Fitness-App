@@ -7,11 +7,12 @@ namespace FitnessWebApi.Database
 		public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
 		#region Generated Properties
+		public virtual DbSet<ActivityLevel> ActivityLevel { get; set; }
 		public virtual DbSet<Gender> Gender { get; set; }
-		public virtual DbSet<User> User { get; set; }
 		public virtual DbSet<MealTime> MealTime { get; set; }
 		public virtual DbSet<Product> Product { get; set; }
 		public virtual DbSet<SizedProduct> SizedProduct { get; set; }
+		public virtual DbSet<User> User { get; set; }
 		public virtual DbSet<UserMeal> UserMeal { get; set; }
 		public virtual DbSet<UserPlan> UserPlan { get; set; }
 		public virtual DbSet<UserRecipe> UserRecipe { get; set; }

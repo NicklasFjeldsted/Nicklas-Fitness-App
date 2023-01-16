@@ -20,6 +20,5 @@
 		public string Instructions { get; set; }
 
 		public List<SizedProduct> SizedProducts { get; set; }
-
 	}
 }

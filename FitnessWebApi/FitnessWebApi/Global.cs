@@ -5,5 +5,18 @@ global using FitnessWebApi.Database;
 global using FitnessWebApi.Database.Entities;
 global using BC = BCrypt.Net.BCrypt;
 global using AutoMapper;
+global using FitnessWebApi._Repositories;
+global using FitnessWebApi._Services;
 global using FitnessWebApi.DTOs.Product;
+global using FitnessWebApi.DTOs.SizedProduct;
+global using FitnessWebApi.DTOs.Gender;
+global using FitnessWebApi.DTOs.MealTime;
+global using FitnessWebApi.DTOs.User;
+global using FitnessWebApi.DTOs.UserPlan;
+global using FitnessWebApi.DTOs.ActivityLevel;
+global using FitnessWebApi.DTOs.UserMeal;
+global using FitnessWebApi.DTOs.UserRecipe;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
+global using FitnessWebApi.Helpers;
 
