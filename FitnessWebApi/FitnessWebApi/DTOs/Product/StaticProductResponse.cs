@@ -4,6 +4,8 @@
 	{
 		public int ProductID { get; set; }
 
+		public string ProductCode { get; set; }
+
 		public string ProductName { get; set; }
 
 		public double EnergyAmount { get; set; }
