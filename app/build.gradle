@@ -2,8 +2,12 @@ plugins {
     id 'com.android.application'
 }
 
+
 android {
     compileSdk 32
+    dataBinding {
+        enabled true
+    }
 
     defaultConfig {
         applicationId "com.example.nicklastest"

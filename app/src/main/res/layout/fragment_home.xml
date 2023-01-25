@@ -8,7 +8,6 @@
     android:padding="30dp"
     tools:context=".HomeFragment">
 
-
     <androidx.cardview.widget.CardView
             android:id="@+id/card_view_for_image"
             android:layout_width="100dp"
@@ -60,13 +59,13 @@
             android:layout_below="@id/include_goal_layout" />
         <View
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"/>
         <include
-            android:id="@+id/steps_counter_layout"
-            layout="@layout/steps_counter"
+            android:id="@+id/exercise_item_layout"
+            layout="@layout/exercise_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="4"
             android:layout_below="@id/include_goal_layout" />
     </LinearLayout>

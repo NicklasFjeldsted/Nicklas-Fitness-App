@@ -1,10 +1,9 @@
-package models.Product;
+package com.example.nicklastest.models.Product;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class StaticProductResponse {
-
     @SerializedName("productID")
     @Expose
     private Integer productID;
@@ -126,5 +125,4 @@ public class StaticProductResponse {
     public void setSaltAmount(Integer saltAmount) {
         this.saltAmount = saltAmount;
     }
-
 }

@@ -1,4 +1,4 @@
-package models.Product;
+package com.example.nicklastest.models.Product;
 
 public class ProductRequest {
     private String ProductName;
@@ -24,8 +24,6 @@ public class ProductRequest {
         ProteinAmount = proteinAmount;
         SaltAmount = saltAmount;
     }
-
-
 
     public String getProductName() {
         return ProductName;
