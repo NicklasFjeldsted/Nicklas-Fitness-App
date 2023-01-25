@@ -23,13 +23,13 @@ namespace FitnessWebApi.Database
 			#region Generated Configurations
 			modelBuilder.Entity<User>(e =>
 			{
-				e.HasIndex(e => e.Email).IsUnique();
-				e.Property(e => e.Created_At).HasDefaultValueSql("getdate()");
+				e.HasIndex(x => x.Email).IsUnique();
+				e.Property(x => x.Created_At).HasDefaultValueSql("getdate()");
 			});
 
 			modelBuilder.Entity<Product>(e =>
 			{
-				e.HasIndex(e => e.ProductCode).IsUnique();
+				e.HasIndex(x => x.ProductCode).IsUnique();
 			});
 			#endregion
 
@@ -44,6 +44,82 @@ namespace FitnessWebApi.Database
 				{
 					GenderID = 2,
 					GenderName = "Female"
+				});
+
+			modelBuilder.Entity<User>().HasData(
+				new User
+				{
+					UserID = 1,
+					Email = "example.com",
+					Password = BC.HashPassword("Passw0rd"),
+					FirstName = "Nicklas",
+					LastName = "Osbeck",
+					Height = 181,
+					GenderID = 1,
+					BirthdayDate = new DateTime(2003, 1, 29),
+					Created_At = DateTime.UtcNow,
+					Modified_At = DateTime.UtcNow,
+					Last_Login = DateTime.UtcNow,
+				}); ;
+
+			modelBuilder.Entity<ActivityLevel>().HasData(
+				new ActivityLevel
+				{
+					ActivityLevelID = 1,
+					ActivityLevelName = "Female-Sedentary",
+					DailyIntake = 1800
+				},
+				new ActivityLevel
+				{
+					ActivityLevelID = 2,
+					ActivityLevelName = "Female-Moderately",
+					DailyIntake = 2000
+				},
+				new ActivityLevel
+				{
+					ActivityLevelID = 3,
+					ActivityLevelName = "Female-Active",
+					DailyIntake = 2400
+				},
+				new ActivityLevel 
+				{
+					ActivityLevelID = 4,
+					ActivityLevelName = "Male-Sedentary",
+					DailyIntake = 2200
+				},
+				new ActivityLevel
+				{
+					ActivityLevelID = 5,
+					ActivityLevelName = "Male-Moderately",
+					DailyIntake = 2800
+				},
+				new ActivityLevel
+				{
+					ActivityLevelID = 6,
+					ActivityLevelName = "Male-Active",
+					DailyIntake = 3200
+				});
+
+			modelBuilder.Entity<MealTime>().HasData(
+				new MealTime
+				{
+					MealTimeID = 1,
+					MealTimeName = "Breakfast"
+				},
+				new MealTime
+				{
+					MealTimeID = 2,
+					MealTimeName = "Lunch"
+				},
+				new MealTime
+				{
+					MealTimeID = 3,
+					MealTimeName = "Dinner"
+				},
+				new MealTime
+				{
+					MealTimeID = 4,
+					MealTimeName = "Snack"
 				});
 			#endregion
 		}

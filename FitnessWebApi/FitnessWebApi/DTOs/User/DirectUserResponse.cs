@@ -18,8 +18,6 @@
 
 		public DateTime BirthdayDate { get; set; }
 
-		public StaticUserPlanResponse UserPlan { get; set; }
-
 		public DateTime Created_At { get; set; }
 
 		public DateTime Modified_At { get; set; }

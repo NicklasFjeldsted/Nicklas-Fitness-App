@@ -24,11 +24,8 @@ namespace FitnessWebApi.Database.Entities
 		public int GenderID { get; set; }
 		public Gender Gender { get; set; }
 
-		[Column(TypeName = "datetime2")]
+		[Column(TypeName = "date")]
 		public DateTime BirthdayDate { get; set; }
-
-		public int UserPlanID { get; set; }
-		public UserPlan UserPlan { get; set; }
 
 		[Column(TypeName = "datetime2")]
 		public DateTime Created_At { get; set; }

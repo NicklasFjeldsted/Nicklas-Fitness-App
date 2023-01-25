@@ -13,5 +13,8 @@
 
 		public int ActivityLevelID { get; set; }
 		public ActivityLevel ActivityLevel { get; set; }
+
+		public int UserID { get; set; }
+		public User User { get; set; }
 	}
 }

@@ -15,7 +15,5 @@
 		public int GenderID { get; set; }
 
 		public DateTime BirthdayDate { get; set; }
-
-		public int UserPlanID { get; set; }
 	}
 }

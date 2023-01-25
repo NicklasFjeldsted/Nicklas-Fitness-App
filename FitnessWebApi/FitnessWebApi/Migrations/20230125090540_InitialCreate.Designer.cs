@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessWebApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230120095209_InitialCreate")]
+    [Migration("20230125090540_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,6 +42,44 @@ namespace FitnessWebApi.Migrations
                     b.HasKey("ActivityLevelID");
 
                     b.ToTable("ActivityLevel");
+
+                    b.HasData(
+                        new
+                        {
+                            ActivityLevelID = 1,
+                            ActivityLevelName = "Female-Sedentary",
+                            DailyIntake = (short)1800
+                        },
+                        new
+                        {
+                            ActivityLevelID = 2,
+                            ActivityLevelName = "Female-Moderately",
+                            DailyIntake = (short)2000
+                        },
+                        new
+                        {
+                            ActivityLevelID = 3,
+                            ActivityLevelName = "Female-Active",
+                            DailyIntake = (short)2400
+                        },
+                        new
+                        {
+                            ActivityLevelID = 4,
+                            ActivityLevelName = "Male-Sedentary",
+                            DailyIntake = (short)2200
+                        },
+                        new
+                        {
+                            ActivityLevelID = 5,
+                            ActivityLevelName = "Male-Moderately",
+                            DailyIntake = (short)2800
+                        },
+                        new
+                        {
+                            ActivityLevelID = 6,
+                            ActivityLevelName = "Male-Active",
+                            DailyIntake = (short)3200
+                        });
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.Gender", b =>
@@ -86,6 +124,28 @@ namespace FitnessWebApi.Migrations
                     b.HasKey("MealTimeID");
 
                     b.ToTable("MealTime");
+
+                    b.HasData(
+                        new
+                        {
+                            MealTimeID = 1,
+                            MealTimeName = "Breakfast"
+                        },
+                        new
+                        {
+                            MealTimeID = 2,
+                            MealTimeName = "Lunch"
+                        },
+                        new
+                        {
+                            MealTimeID = 3,
+                            MealTimeName = "Dinner"
+                        },
+                        new
+                        {
+                            MealTimeID = 4,
+                            MealTimeName = "Snack"
+                        });
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.Product", b =>
@@ -180,7 +240,7 @@ namespace FitnessWebApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
                     b.Property<DateTime>("BirthdayDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
@@ -211,9 +271,6 @@ namespace FitnessWebApi.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("UserPlanID")
-                        .HasColumnType("int");
-
                     b.HasKey("UserID");
 
                     b.HasIndex("Email")
@@ -222,9 +279,23 @@ namespace FitnessWebApi.Migrations
 
                     b.HasIndex("GenderID");
 
-                    b.HasIndex("UserPlanID");
-
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            UserID = 1,
+                            BirthdayDate = new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2010),
+                            Email = "example.com",
+                            FirstName = "Nicklas",
+                            GenderID = 1,
+                            Height = 181.0,
+                            LastName = "Osbeck",
+                            LastLogin = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2012),
+                            ModifiedAt = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2012),
+                            Password = "$2a$10$vNK0OYCLTz1BXR3a8Gs6weEz0w6l8LvDue5k3egq4WuyO3w9G7lvS"
+                        });
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserMeal", b =>
@@ -279,12 +350,17 @@ namespace FitnessWebApi.Migrations
                     b.Property<double>("StartWeight")
                         .HasColumnType("float");
 
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
                     b.Property<double>("WeightGoal")
                         .HasColumnType("float");
 
                     b.HasKey("UserPlanID");
 
                     b.HasIndex("ActivityLevelID");
+
+                    b.HasIndex("UserID");
 
                     b.ToTable("UserPlan");
                 });
@@ -354,15 +430,7 @@ namespace FitnessWebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitnessWebApi.Database.Entities.UserPlan", "UserPlan")
-                        .WithMany()
-                        .HasForeignKey("UserPlanID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Gender");
-
-                    b.Navigation("UserPlan");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserMeal", b =>
@@ -392,7 +460,15 @@ namespace FitnessWebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FitnessWebApi.Database.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ActivityLevel");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserRecipe", b =>
