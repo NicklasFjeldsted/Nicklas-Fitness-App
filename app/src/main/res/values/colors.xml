@@ -8,4 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="main_background">#F6F6F8</color>
+    <color name="pink">#EC3762</color>
+    <color name="track_grey">#ECEBF1</color>
+    <color name="fire_orange">#F99B31</color>
+    <color name="blue_cutlery">#0167ED</color>
+    <color name="flag_gray">#6D6C71</color>
 </resources>
