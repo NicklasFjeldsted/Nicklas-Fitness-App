@@ -12,5 +12,7 @@
 
 		public int ProductID { get; set; }
 		public Product Product { get; set; }
+
+		public ICollection<ProgressMealProduct> ProgressMealProducts { get; set; }
 	}
 }

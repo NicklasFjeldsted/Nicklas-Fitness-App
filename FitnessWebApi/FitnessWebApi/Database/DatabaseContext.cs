@@ -16,6 +16,9 @@ namespace FitnessWebApi.Database
 		public virtual DbSet<UserMeal> UserMeal { get; set; }
 		public virtual DbSet<UserPlan> UserPlan { get; set; }
 		public virtual DbSet<UserRecipe> UserRecipe { get; set; }
+		public virtual DbSet<PlanProgress> PlanProgress { get; set; }
+		public virtual DbSet<ProgressMeal> ProgressMeal { get; set; }
+		public virtual DbSet<ProgressMealProduct> ProgressMealProduct { get; set; }
 		#endregion
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,6 +34,24 @@ namespace FitnessWebApi.Database
 			{
 				e.HasIndex(x => x.ProductCode).IsUnique();
 			});
+
+			modelBuilder.Entity<ProgressMealProduct>(e =>
+			{
+				e.HasKey(x => new { x.ProgressMealID, x.SizedProductID });
+				e.HasOne(x => x.SizedProduct).WithMany(x => x.ProgressMealProducts).HasForeignKey(x => x.SizedProductID);
+				e.HasOne(x => x.ProgressMeal).WithMany(x => x.ProgressMealProducts).HasForeignKey(x => x.ProgressMealID);
+			});
+
+			modelBuilder.Entity<PlanProgress>(e =>
+			{
+				e.HasOne(e => e.UserPlan).WithMany(x => x.PlanProgress).HasForeignKey(x => x.PlanProgressID).OnDelete(DeleteBehavior.Cascade);
+			});
+
+			modelBuilder.Entity<ProgressMeal>(e =>
+			{
+				e.HasOne(x => x.PlanProgress).WithMany(x => x.ProgressMeals).HasForeignKey(x => x.ProgressMealID).OnDelete(DeleteBehavior.Cascade);
+			});
+
 			#endregion
 
 			#region Generated Data
@@ -61,6 +82,23 @@ namespace FitnessWebApi.Database
 					Modified_At = DateTime.UtcNow,
 					Last_Login = DateTime.UtcNow,
 				}); ;
+
+			modelBuilder.Entity<Product>().HasData(
+				new Product
+				{
+					ProductID = 1,
+					ProductName = "Example",
+					ProductCode = "1234567",
+					EnergyAmount = 1,
+					FatAmount = 2,
+					SaturatedFatAmount = 1,
+					CarbohydrateAmount = 1,
+					SugarAmount = 1,
+					FiberAmount = 1,
+					ProteinAmount = 1,
+					SaltAmount = 1,
+					
+				});
 
 			modelBuilder.Entity<ActivityLevel>().HasData(
 				new ActivityLevel
@@ -121,6 +159,44 @@ namespace FitnessWebApi.Database
 					MealTimeID = 4,
 					MealTimeName = "Snack"
 				});
+
+			modelBuilder.Entity<UserPlan>().HasData(
+				new UserPlan
+				{
+					UserPlanID = 1,
+					StartWeight = 79.5,
+					WeightGoal = 85,
+					PlanProgress = new List<PlanProgress>()
+					{
+						new PlanProgress
+						{
+							PlanProgressID = 1,
+							CurrentWeight = 80,
+							ProgressDate = DateTime.UtcNow,
+							ProgressMeals = new List<ProgressMeal>()
+							{
+								new ProgressMeal
+								{
+									ProgressMealID = 1,
+									MealTimeId = 1,
+									ProgressMealProducts = new List<ProgressMealProduct>()
+									{
+										new ProgressMealProduct
+										{
+											ProgressMealID = 1,
+											SizedProductID = 1,
+										}
+									},
+									PlanProgressID = 1,
+								}
+							},
+							UserPlanID = 1
+						}
+					},
+					WeeklyGoal = 0.5,
+					UserID = 1,
+					ActivityLevelID = 5,
+				}); ;
 			#endregion
 		}
 	}
