@@ -5,7 +5,7 @@
 		[Key]
 		public int PlanProgressID { get; set; }
 
-		public List<ProgressMeal> ProgressMeals { get; set; }
+		public ICollection<ProgressMeal> ProgressMeals { get; set; }
 
 		public DateTime ProgressDate { get; set; }
 

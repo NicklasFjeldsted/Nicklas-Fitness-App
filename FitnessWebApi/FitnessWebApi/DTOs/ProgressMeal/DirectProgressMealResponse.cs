@@ -6,7 +6,7 @@
 
 		public StaticMealTimeResponse MealTime { get; set; }
 
-		public List<StaticSizedProductResponse> ProgressMealRroducts { get; set; }
+		public List<StaticSizedProductResponse> SizedProducts { get; set; } = new List<StaticSizedProductResponse>();
 
 		public StaticPlanProgressResponse PlanProgress { get; set; }
 	}

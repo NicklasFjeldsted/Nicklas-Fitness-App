@@ -16,6 +16,15 @@ builder.Services.AddTransient<IUserMealService, UserMealService>();
 
 builder.Services.AddTransient<IUserRecipeRepository, UserRecipeRepository>();
 builder.Services.AddTransient<IUserRecipeService, UserRecipeService>();
+
+builder.Services.AddTransient<IProgressMealRepository, ProgressMealRepository>();
+builder.Services.AddTransient<IProgressMealService, ProgressMealService>();
+
+builder.Services.AddTransient<IPlanProgressRepository, PlanProgressRepository>();
+builder.Services.AddTransient<IPlanProgressService, PlanProgressService>();
+
+builder.Services.AddTransient<IUserPlanRepository, UserPlanRepository>();
+builder.Services.AddTransient<IUserPlanService, UserPlanService>();
 #endregion
 
 builder.Services.AddDbContext<DatabaseContext>(options => {

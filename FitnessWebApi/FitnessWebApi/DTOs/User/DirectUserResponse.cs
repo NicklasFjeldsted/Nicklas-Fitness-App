@@ -14,6 +14,8 @@
 
 		public double Height { get; set; }
 
+		public StaticUserPlanResponse UserPlan { get; set; }
+
 		public StaticGenderResponse Gender { get; set; }
 
 		public DateTime BirthdayDate { get; set; }

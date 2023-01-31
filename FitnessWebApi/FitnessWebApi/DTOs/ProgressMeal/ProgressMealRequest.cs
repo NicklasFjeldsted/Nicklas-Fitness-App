@@ -2,10 +2,10 @@
 {
 	public class ProgressMealRequest
 	{
-		public int ProgressMealID { get; set; }
-
 		public int MealTimeID { get; set; }
 	
-		public List<StaticSizedProductResponse> SizedProducts { get; set; }
+		public List<SizedProductRequest> SizedProducts { get; set; } = new List<SizedProductRequest>();
+
+		public int PlanProgressID { get; set; }
 	}
 }

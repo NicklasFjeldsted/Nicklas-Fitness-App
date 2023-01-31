@@ -21,6 +21,7 @@
 		{
 			return await _context.User
 				.Include(x => x.Gender)
+				.Include(x => x.UserPlan)
 				.ToListAsync();
 		}
 
@@ -28,6 +29,7 @@
 		{
 			return await _context.User
 				.Include(x => x.Gender)
+				.Include(x => x.UserPlan)
 				.Where(x => x.UserID == id)
 				.FirstOrDefaultAsync();
 		}
@@ -49,6 +51,7 @@
 				user.LastName = request.LastName;
 				user.BirthdayDate = request.BirthdayDate;
 				user.Height = request.Height;
+				user.UserPlanID = request.UserPlanID;
 				user.Modified_At = DateTime.UtcNow;
 
 				await _context.SaveChangesAsync();

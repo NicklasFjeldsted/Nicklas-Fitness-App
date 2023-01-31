@@ -5,32 +5,34 @@ namespace FitnessWebApi._Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UserPlanController : ControllerBase
+	public class ProgressMealController : ControllerBase
 	{
-		private readonly IUserPlanService _service;
+		private readonly IProgressMealService _service;
 
-		public UserPlanController(IUserPlanService service)
+		public ProgressMealController(IProgressMealService service)
 		{
 			_service = service;
 		}
+
 
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
 			try
 			{
-				List<StaticUserPlanResponse> userPlans = await _service.GetAll();
-				if(userPlans == null)
+				List<StaticProgressMealResponse> progressMeals = await _service.GetAll();
+				if (progressMeals == null)
 				{
 					return Problem("Nothing was returned from service, this was unexpected");
 				}
-				
-				if(userPlans.Count == 0)
+
+				if (progressMeals.Count == 0)
 				{
 					return NoContent();
 				}
 
-				return Ok(userPlans);
+
+				return Ok(progressMeals);
 			}
 			catch (Exception ex)
 			{
@@ -43,13 +45,13 @@ namespace FitnessWebApi._Controllers
 		{
 			try
 			{
-				DirectUserPlanResponse userPlan = await _service.GetById(id);
-				if(userPlan == null)
+				DirectProgressMealResponse progressMeal = await _service.GetById(id);
+				if (progressMeal == null)
 				{
 					return NotFound();
 				}
 
-				return Ok(userPlan);
+				return Ok(progressMeal);
 			}
 			catch (Exception ex)
 			{
@@ -58,17 +60,17 @@ namespace FitnessWebApi._Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] UserPlanRequest request)
+		public async Task<IActionResult> Create([FromBody] ProgressMealRequest request)
 		{
 			try
 			{
-				DirectUserPlanResponse userPlan = await _service.Create(request);
-				if (userPlan == null)
+				DirectProgressMealResponse progressMeal = await _service.Create(request);
+				if (progressMeal == null)
 				{
 					return BadRequest();
 				}
 
-				return Ok(userPlan);
+				return Ok(progressMeal);
 			}
 			catch (Exception ex)
 			{
@@ -77,17 +79,17 @@ namespace FitnessWebApi._Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> Update(int id, [FromBody] UserPlanRequest request)
+		public async Task<IActionResult> Update(int id, [FromBody] ProgressMealRequest request)
 		{
 			try
 			{
-				DirectUserPlanResponse userPlan = await _service.Update(id, request);
-				if (userPlan == null)
+				DirectProgressMealResponse progressMeal = await _service.Update(id, request);
+				if (progressMeal == null)
 				{
 					return BadRequest();
 				}
 
-				return Ok(userPlan);
+				return Ok(progressMeal);
 			}
 			catch (Exception ex)
 			{
@@ -100,13 +102,13 @@ namespace FitnessWebApi._Controllers
 		{
 			try
 			{
-				DirectUserPlanResponse userPlan = await _service.Delete(id);
-				if(userPlan == null)
+				DirectProgressMealResponse progressMeal = await _service.Delete(id);
+				if (progressMeal == null)
 				{
 					return BadRequest();
 				}
 
-				return Ok(userPlan);
+				return Ok(progressMeal);
 			}
 			catch (Exception ex)
 			{

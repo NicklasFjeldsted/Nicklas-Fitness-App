@@ -27,6 +27,11 @@
 		public async Task<PlanProgress> GetById(int id)
 		{
 			return await _context.PlanProgress
+				.Include(x => x.UserPlan)
+				.Include(x => x.ProgressMeals)
+				.ThenInclude(x => x.SizedProducts)
+				.Include(x => x.ProgressMeals)
+				.ThenInclude(x => x.MealTime)
 				.Where(x => x.PlanProgressID == id)
 				.FirstOrDefaultAsync();
 		}

@@ -27,6 +27,24 @@
 			CreateMap<UserPlan, DirectUserPlanResponse>();
 			CreateMap<UserPlan, StaticUserPlanResponse>();
 			CreateMap<UserPlanRequest, UserPlan>();
+
+			CreateMap<ProgressMeal, StaticProgressMealResponse>();
+			CreateMap<ProgressMeal, DirectProgressMealResponse>();
+			CreateMap<ProgressMealRequest, ProgressMeal>()
+				.ForMember(x => x.SizedProducts, y => y.Ignore());
+
+			CreateMap<UserRecipe, DirectUserRecipeResponse >();
+			CreateMap<UserRecipe, StaticUserRecipeResponse >();
+			CreateMap<UserRecipeRequest,UserRecipe>();
+
+			CreateMap<PlanProgress, DirectPlanProgressResponse>();
+			CreateMap<PlanProgress, StaticPlanProgressResponse>();
+			CreateMap<PlanProgressRequest,PlanProgress >();
+
+			CreateMap<UserMeal, DirectUserMealResponse>();
+			CreateMap<UserMeal, StaticUserMealResponse>();
+			CreateMap<UserMealRequest, UserMeal>();
+
 		}
 	}
 }

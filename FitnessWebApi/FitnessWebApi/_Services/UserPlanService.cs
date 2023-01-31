@@ -8,7 +8,7 @@
 		public Task<DirectUserPlanResponse> Update(int id, UserPlanRequest request);
 		public Task<DirectUserPlanResponse> Delete(int id);
 	}
-	public class UserPlanService
+	public class UserPlanService : IUserPlanService
 	{
 		public readonly IUserPlanRepository _repository;
 		private readonly IMapper m_mapper;

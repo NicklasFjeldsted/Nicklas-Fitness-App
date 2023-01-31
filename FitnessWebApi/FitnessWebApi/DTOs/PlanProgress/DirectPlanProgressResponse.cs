@@ -4,7 +4,7 @@
 	{
 		public int PlanProgressID { get; set; }
 
-		public List<StaticProgressMealResponse> ProgressMeals { get; set; }
+		public List<DirectProgressMealResponse> ProgressMeals { get; set; }
 
 		public DateTime ProgressDate { get; set; }
 

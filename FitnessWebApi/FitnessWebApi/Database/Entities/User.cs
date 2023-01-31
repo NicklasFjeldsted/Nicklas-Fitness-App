@@ -21,6 +21,9 @@ namespace FitnessWebApi.Database.Entities
 
 		public double Height { get; set; }
 
+		public int? UserPlanID { get; set; }
+		public UserPlan UserPlan { get; set; }
+
 		public int GenderID { get; set; }
 		public Gender Gender { get; set; }
 

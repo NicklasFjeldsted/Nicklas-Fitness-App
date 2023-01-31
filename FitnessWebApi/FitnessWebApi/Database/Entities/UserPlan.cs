@@ -16,9 +16,8 @@
 		public int ActivityLevelID { get; set; }
 		public ActivityLevel ActivityLevel { get; set; }
 
-		public int UserID { get; set; }
-		public User User { get; set; }
+		public ICollection<PlanProgress> PlanProgress { get; set; }
 
-		public List<PlanProgress> PlanProgress { get; set; }
+		public User User { get; set; }
 	}
 }

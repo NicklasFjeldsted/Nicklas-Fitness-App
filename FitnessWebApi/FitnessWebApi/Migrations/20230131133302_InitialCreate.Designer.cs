@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessWebApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230125090540_InitialCreate")]
+    [Migration("20230131133302_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -148,6 +148,39 @@ namespace FitnessWebApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.PlanProgress", b =>
+                {
+                    b.Property<int>("PlanProgressID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlanProgressID"));
+
+                    b.Property<double?>("CurrentWeight")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("ProgressDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserPlanID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlanProgressID");
+
+                    b.HasIndex("UserPlanID");
+
+                    b.ToTable("PlanProgress");
+
+                    b.HasData(
+                        new
+                        {
+                            PlanProgressID = 1,
+                            CurrentWeight = 79.0,
+                            ProgressDate = new DateTime(2023, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserPlanID = 1
+                        });
+                });
+
             modelBuilder.Entity("FitnessWebApi.Database.Entities.Product", b =>
                 {
                     b.Property<int>("ProductID")
@@ -193,6 +226,45 @@ namespace FitnessWebApi.Migrations
                         .HasFilter("[ProductCode] IS NOT NULL");
 
                     b.ToTable("Product");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductID = 1,
+                            CarbohydrateAmount = 6.2000000000000002,
+                            EnergyAmount = 160.0,
+                            FatAmount = 9.3000000000000007,
+                            FiberAmount = 0.0,
+                            ProductCode = " 7032069719657",
+                            ProductName = "Makrel i tomat",
+                            ProteinAmount = 12.0,
+                            SaltAmount = 0.63,
+                            SaturatedFatAmount = 1.8999999999999999,
+                            SugarAmount = 4.0
+                        });
+                });
+
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.ProgressMeal", b =>
+                {
+                    b.Property<int>("ProgressMealID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgressMealID"));
+
+                    b.Property<int>("MealTimeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlanProgressID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProgressMealID");
+
+                    b.HasIndex("MealTimeID");
+
+                    b.HasIndex("PlanProgressID");
+
+                    b.ToTable("ProgressMeal");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.SizedProduct", b =>
@@ -206,11 +278,11 @@ namespace FitnessWebApi.Migrations
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ProgressMealID")
+                        .HasColumnType("int");
+
                     b.Property<double>("ServingSize")
                         .HasColumnType("float");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
 
                     b.Property<int?>("UserMealMealID")
                         .HasColumnType("int");
@@ -222,7 +294,7 @@ namespace FitnessWebApi.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("ProgressMealID");
 
                     b.HasIndex("UserMealMealID");
 
@@ -271,6 +343,9 @@ namespace FitnessWebApi.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<int?>("UserPlanID")
+                        .HasColumnType("int");
+
                     b.HasKey("UserID");
 
                     b.HasIndex("Email")
@@ -279,6 +354,10 @@ namespace FitnessWebApi.Migrations
 
                     b.HasIndex("GenderID");
 
+                    b.HasIndex("UserPlanID")
+                        .IsUnique()
+                        .HasFilter("[UserPlanID] IS NOT NULL");
+
                     b.ToTable("User");
 
                     b.HasData(
@@ -286,15 +365,16 @@ namespace FitnessWebApi.Migrations
                         {
                             UserID = 1,
                             BirthdayDate = new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2010),
+                            CreatedAt = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6099),
                             Email = "example.com",
                             FirstName = "Nicklas",
                             GenderID = 1,
                             Height = 181.0,
                             LastName = "Osbeck",
-                            LastLogin = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2012),
-                            ModifiedAt = new DateTime(2023, 1, 25, 9, 5, 40, 64, DateTimeKind.Utc).AddTicks(2012),
-                            Password = "$2a$10$vNK0OYCLTz1BXR3a8Gs6weEz0w6l8LvDue5k3egq4WuyO3w9G7lvS"
+                            LastLogin = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101),
+                            ModifiedAt = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101),
+                            Password = "$2a$10$6P5tmZPLY5mUToQQO4puZeUJFAj5e/DBD8SSUIqb/OBwbNp62HX2m",
+                            UserPlanID = 1
                         });
                 });
 
@@ -344,14 +424,14 @@ namespace FitnessWebApi.Migrations
                     b.Property<int>("ActivityLevelID")
                         .HasColumnType("int");
 
-                    b.Property<double>("CurrentWeight")
-                        .HasColumnType("float");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<double>("StartWeight")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
+                    b.Property<double>("WeeklyGoal")
+                        .HasColumnType("float");
 
                     b.Property<double>("WeightGoal")
                         .HasColumnType("float");
@@ -360,9 +440,18 @@ namespace FitnessWebApi.Migrations
 
                     b.HasIndex("ActivityLevelID");
 
-                    b.HasIndex("UserID");
-
                     b.ToTable("UserPlan");
+
+                    b.HasData(
+                        new
+                        {
+                            UserPlanID = 1,
+                            ActivityLevelID = 5,
+                            StartDate = new DateTime(2023, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StartWeight = 79.0,
+                            WeeklyGoal = 0.5,
+                            WeightGoal = 85.0
+                        });
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserRecipe", b =>
@@ -395,6 +484,36 @@ namespace FitnessWebApi.Migrations
                     b.ToTable("UserRecipe");
                 });
 
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.PlanProgress", b =>
+                {
+                    b.HasOne("FitnessWebApi.Database.Entities.UserPlan", "UserPlan")
+                        .WithMany("PlanProgress")
+                        .HasForeignKey("UserPlanID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("UserPlan");
+                });
+
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.ProgressMeal", b =>
+                {
+                    b.HasOne("FitnessWebApi.Database.Entities.MealTime", "MealTime")
+                        .WithMany()
+                        .HasForeignKey("MealTimeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FitnessWebApi.Database.Entities.PlanProgress", "PlanProgress")
+                        .WithMany("ProgressMeals")
+                        .HasForeignKey("PlanProgressID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MealTime");
+
+                    b.Navigation("PlanProgress");
+                });
+
             modelBuilder.Entity("FitnessWebApi.Database.Entities.SizedProduct", b =>
                 {
                     b.HasOne("FitnessWebApi.Database.Entities.Product", "Product")
@@ -403,23 +522,28 @@ namespace FitnessWebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitnessWebApi.Database.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitnessWebApi.Database.Entities.UserMeal", null)
+                    b.HasOne("FitnessWebApi.Database.Entities.ProgressMeal", "ProgressMeal")
                         .WithMany("SizedProducts")
-                        .HasForeignKey("UserMealMealID");
+                        .HasForeignKey("ProgressMealID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("FitnessWebApi.Database.Entities.UserRecipe", null)
+                    b.HasOne("FitnessWebApi.Database.Entities.UserMeal", "UserMeal")
                         .WithMany("SizedProducts")
-                        .HasForeignKey("UserRecipeRecipeID");
+                        .HasForeignKey("UserMealMealID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("FitnessWebApi.Database.Entities.UserRecipe", "UserRecipe")
+                        .WithMany("SizedProducts")
+                        .HasForeignKey("UserRecipeRecipeID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Product");
 
-                    b.Navigation("User");
+                    b.Navigation("ProgressMeal");
+
+                    b.Navigation("UserMeal");
+
+                    b.Navigation("UserRecipe");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.User", b =>
@@ -430,7 +554,13 @@ namespace FitnessWebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FitnessWebApi.Database.Entities.UserPlan", "UserPlan")
+                        .WithOne("User")
+                        .HasForeignKey("FitnessWebApi.Database.Entities.User", "UserPlanID");
+
                     b.Navigation("Gender");
+
+                    b.Navigation("UserPlan");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserMeal", b =>
@@ -460,15 +590,7 @@ namespace FitnessWebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitnessWebApi.Database.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ActivityLevel");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserRecipe", b =>
@@ -482,9 +604,26 @@ namespace FitnessWebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.PlanProgress", b =>
+                {
+                    b.Navigation("ProgressMeals");
+                });
+
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.ProgressMeal", b =>
+                {
+                    b.Navigation("SizedProducts");
+                });
+
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserMeal", b =>
                 {
                     b.Navigation("SizedProducts");
+                });
+
+            modelBuilder.Entity("FitnessWebApi.Database.Entities.UserPlan", b =>
+                {
+                    b.Navigation("PlanProgress");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitnessWebApi.Database.Entities.UserRecipe", b =>
