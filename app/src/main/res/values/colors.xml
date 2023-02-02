@@ -13,4 +13,7 @@
     <color name="fire_orange">#F99B31</color>
     <color name="blue_cutlery">#0167ED</color>
     <color name="flag_gray">#6D6C71</color>
+    <color name="text_blue">#2C78E2</color>
+    <color name="background_grey">#EBEAEF</color>
+    <color name="date_background_grey">#EBEAEF</color>
 </resources>
