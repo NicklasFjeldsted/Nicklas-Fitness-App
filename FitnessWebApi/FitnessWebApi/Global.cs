@@ -16,6 +16,8 @@ global using FitnessWebApi.DTOs.UserPlan;
 global using FitnessWebApi.DTOs.ActivityLevel;
 global using FitnessWebApi.DTOs.UserMeal;
 global using FitnessWebApi.DTOs.UserRecipe;
+global using FitnessWebApi.DTOs.ProgressMeal;
+global using FitnessWebApi.DTOs.PlanProgress;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
 global using FitnessWebApi.Helpers;

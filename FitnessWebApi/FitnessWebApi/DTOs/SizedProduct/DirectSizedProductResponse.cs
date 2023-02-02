@@ -6,8 +6,6 @@
 
 		public double ServingSize { get; set; }
 
-		public StaticUserResponse User { get; set; }
-
 		public StaticProductResponse Product { get; set; }
 	}
 }

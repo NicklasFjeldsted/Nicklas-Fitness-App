@@ -4,8 +4,6 @@
 	{
 		public double ServingSize { get; set; }
 
-		public int UserID { get; set; }
-
 		public int ProductID { get; set; }
 	}
 }

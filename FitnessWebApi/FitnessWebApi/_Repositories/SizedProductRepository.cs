@@ -21,13 +21,13 @@
 		public async Task<List<SizedProduct>> GetAllById(int id)
 		{
 			return await _context.SizedProduct
-				.Where(x => x.UserID == id)
 				.ToListAsync();
 		}
 
 		public async Task<SizedProduct> GetById(int id)
 		{
 			return await _context.SizedProduct
+				.Include(x => x.Product)
 				.Where(x => x.SizedProductID == id)
 				.FirstOrDefaultAsync();
 		}

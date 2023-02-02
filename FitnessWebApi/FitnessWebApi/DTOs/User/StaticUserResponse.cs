@@ -14,11 +14,11 @@
 
 		public double Height { get; set; }
 
+		public int UserPlanID { get; set; }
+
 		public int GenderID { get; set; }
 
 		public DateTime BirthdayDate { get; set; }
-
-		public int UserPlanID { get; set; }
 
 		public DateTime Created_At { get; set; }
 
