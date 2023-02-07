@@ -2,13 +2,18 @@ package com.example.nicklastest;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.Calendar;
 
@@ -16,36 +21,21 @@ import java.util.Calendar;
 public class DiaryFragment extends Fragment implements View.OnClickListener {
     DatePickerDialog picker;
     View diaryDailyIntake;
-    Button datePickerBtn;
-    Button backDateBtn;
-    Button forwardDateBtn;
+    Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
     Calendar cldr;
     int currentDay, currentMonth, day, month, year;
     String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+       return inflater.inflate(R.layout.fragment_diary, container, false);
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_diary, container, false);
-
-        cldr = Calendar.getInstance();
-        day = cldr.get(Calendar.DAY_OF_MONTH);
-        month = cldr.get(Calendar.MONTH) + 1;
-        year = cldr.get(Calendar.YEAR);
-        currentDay = day;
-        currentMonth = month;
-
-
-        diaryDailyIntake = view.findViewById(R.id.diary_daily_intake);
-        datePickerBtn = diaryDailyIntake.findViewById(R.id.calender_datePicker_btn);
-        backDateBtn = diaryDailyIntake.findViewById(R.id.calender_back_btn);
-        forwardDateBtn = diaryDailyIntake.findViewById(R.id.calender_forward_btn);
-        datePickerBtn.setOnClickListener(this);
-        backDateBtn.setOnClickListener(this);
-        forwardDateBtn.setOnClickListener(this);
-        return view;
+        assignVariables(view);
     }
 
     @Override
@@ -70,6 +60,26 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
 
             case R.id.calender_forward_btn: {
                 SetDate(true);
+                break;
+            }
+
+            case R.id.add_food_breakfast: {
+                OpenAddFood("Breakfast");
+                break;
+            }
+
+            case R.id.add_food_lunch: {
+                OpenAddFood("Lunch");
+                break;
+            }
+
+            case R.id.add_food_dinner: {
+                OpenAddFood("Dinner");
+                break;
+            }
+
+            case R.id.add_food_snacks: {
+                OpenAddFood("Snacks");
                 break;
             }
         }
@@ -125,4 +135,38 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
         }
     }
+
+    public void assignVariables(View view) {
+        cldr = Calendar.getInstance();
+        day = cldr.get(Calendar.DAY_OF_MONTH);
+        month = cldr.get(Calendar.MONTH) + 1;
+        year = cldr.get(Calendar.YEAR);
+        currentDay = day;
+        currentMonth = month;
+
+        diaryDailyIntake = view.findViewById(R.id.diary_daily_intake);
+        datePickerBtn = diaryDailyIntake.findViewById(R.id.calender_datePicker_btn);
+        backDateBtn = diaryDailyIntake.findViewById(R.id.calender_back_btn);
+        forwardDateBtn = diaryDailyIntake.findViewById(R.id.calender_forward_btn);
+        addFoodBreakfast = view.findViewById(R.id.add_food_breakfast);
+        addFoodLunch = view.findViewById(R.id.add_food_lunch);
+        addFoodDinner = view.findViewById(R.id.add_food_dinner);
+        addFoodSnacks = view.findViewById(R.id.add_food_snacks);
+        datePickerBtn.setOnClickListener(this);
+        backDateBtn.setOnClickListener(this);
+        forwardDateBtn.setOnClickListener(this);
+        addFoodBreakfast.setOnClickListener(this);
+        addFoodLunch.setOnClickListener(this);
+        addFoodDinner.setOnClickListener(this);
+        addFoodSnacks.setOnClickListener(this);
+    }
+
+    public void OpenAddFood(String title) {
+        AddFoodFragment addFoodFragment = new AddFoodFragment();
+        addFoodFragment = addFoodFragment.newInstance(title);
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, addFoodFragment).addToBackStack(null).commit();
+    }
+
+    // TODO Make GET request on MealProgress after AddFoodFragment POST/PUT request
 }

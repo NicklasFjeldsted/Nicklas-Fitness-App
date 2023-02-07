@@ -1,7 +1,7 @@
 package com.example.nicklastest;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,31 +10,34 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Fragment objects
+    final private HomeFragment homeFragment = new HomeFragment();
+    final private DiaryFragment diaryFragment = new DiaryFragment();
+    final private NutritionFragment nutritionFragment = new NutritionFragment();
+
     BottomNavigationView bottomNavigationView;
 
-    final HomeFragment homeFragment = new HomeFragment();
-    final DiaryFragment diaryFragment = new DiaryFragment();
-    final NutritionFragment nutritionFragment = new NutritionFragment();
-
-    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+        setContentView(R.layout.activity_main); // Sets this activity as layout on screen
 
+        bottomNavigationView = findViewById(R.id.bottom_navigation); // Gets navigationView
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit(); // Adds Home Fragment to the layout in activity runtime
+
+        // replaces current fragment in activity runtime with chosen fragment
         bottomNavigationView.setOnItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.home:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit(); // Home Fragment
                     return true;
                 case R.id.diary:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container, diaryFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, diaryFragment).commit(); // Diary Fragment
                     return true;
                 case R.id.nutrition:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.container, nutritionFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, nutritionFragment).commit(); // Nutrition Fragment
                     return true;
             }
             return false;
