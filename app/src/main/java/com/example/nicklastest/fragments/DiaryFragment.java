@@ -1,8 +1,7 @@
-package com.example.nicklastest;
+package com.example.nicklastest.fragments;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,10 @@ import android.widget.DatePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.nicklastest.R;
+import com.example.nicklastest.fragments.AddFoodFragment;
 
 import java.util.Calendar;
 

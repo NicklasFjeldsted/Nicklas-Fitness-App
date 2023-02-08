@@ -1,10 +1,12 @@
 package com.example.nicklastest;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.nicklastest.fragments.DiaryFragment;
+import com.example.nicklastest.fragments.HomeFragment;
+import com.example.nicklastest.fragments.NutritionFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 

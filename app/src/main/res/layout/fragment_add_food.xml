@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddFoodFragment">
+    android:orientation="vertical"
+    tools:context=".fragments.AddFoodFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <include
+        android:id="@+id/layout_add_food_top"
+        layout="@layout/add_food_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/meal_time_title"
-        android:layout_width="wrap_content"
+    <!-- TODO: Have a line follow under navbar that follows when scrolling horizontally -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
-        app:layout_constraintBottom_toBottomOf="@id/press_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        app:tabContentStart="16dp"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/text_blue"
+        app:tabIndicatorFullWidth="false"
+        app:tabMode="fixed"
+        app:tabPaddingEnd="16dp"
+        app:tabPaddingStart="16dp"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabTextColor="@color/black" />
 
-    <Button
-        android:id="@+id/press_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PRESS BUTTON"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

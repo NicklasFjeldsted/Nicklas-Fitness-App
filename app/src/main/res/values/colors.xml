@@ -15,5 +15,8 @@
     <color name="flag_gray">#6D6C71</color>
     <color name="text_blue">#2C78E2</color>
     <color name="background_grey">#EBEAEF</color>
+    <color name="background_lightGray">#f9f9f9 </color>
     <color name="date_background_grey">#EBEAEF</color>
+    <color name="hint_text_color">#767676</color>
+    <color name="search_view_icon">#636363</color>
 </resources>

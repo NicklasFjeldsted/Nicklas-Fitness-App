@@ -1,4 +1,4 @@
-package com.example.nicklastest;
+package com.example.nicklastest.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.nicklastest.R;
 import com.example.nicklastest.models.Product.StaticProductResponse;
 import com.example.nicklastest.models.User.DirectUserResponse;
 import com.example.nicklastest.services.ProductService;
