@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:context=".fragments.DiaryFragment"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.DiaryFragment"
-    android:background="@color/background_grey">
+    android:layout_height="wrap_content"
+    android:background="@color/background_grey"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/diary_daily_intake"
         layout="@layout/diary_daily_intake" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/diary_daily_intake"
-        android:paddingVertical="10dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:descendantFocusability="beforeDescendants">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            android:animateLayoutChanges="true"
             android:orientation="vertical"
-            android:divider="@layout/spacer_medium"
-            android:showDividers="middle">
+            android:divider="@drawable/spacer_medium"
+            android:showDividers="middle"
+            android:layout_marginVertical="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -33,7 +38,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="6">
+                    android:weightSum="6"
+                    android:background="@drawable/textlines">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -43,6 +50,7 @@
                         android:textStyle="bold"
                         android:padding="10dp"
                         android:layout_weight="5"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -53,7 +61,15 @@
                         android:padding="10dp"
                         android:layout_weight="1"
                         android:gravity="center"/>
+
                 </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_view_breakfast"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"/>
+
                 <Button
                     android:id="@+id/add_food_breakfast"
                     android:layout_width="match_parent"
@@ -65,6 +81,7 @@
                     android:textColor="@color/text_blue"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"/>
+
             </LinearLayout>
 
 
@@ -78,7 +95,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="6">
+                    android:weightSum="6"
+                    android:background="@drawable/textlines">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -88,6 +107,7 @@
                         android:textStyle="bold"
                         android:padding="10dp"
                         android:layout_weight="5"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,7 +118,15 @@
                         android:padding="10dp"
                         android:layout_weight="1"
                         android:gravity="center"/>
+
                 </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_view_lunch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"/>
+
                 <Button
                     android:id="@+id/add_food_lunch"
                     android:layout_width="match_parent"
@@ -110,6 +138,7 @@
                     android:textColor="@color/text_blue"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -122,7 +151,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="6">
+                    android:weightSum="6"
+                    android:background="@drawable/textlines">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -132,6 +163,7 @@
                         android:textStyle="bold"
                         android:padding="10dp"
                         android:layout_weight="5"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -142,7 +174,15 @@
                         android:padding="10dp"
                         android:layout_weight="1"
                         android:gravity="center"/>
+
                 </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_view_dinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"/>
+
                 <Button
                     android:id="@+id/add_food_dinner"
                     android:layout_width="match_parent"
@@ -154,6 +194,7 @@
                     android:textColor="@color/text_blue"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"/>
+
             </LinearLayout>
 
             <LinearLayout
@@ -166,7 +207,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="6">
+                    android:weightSum="6"
+                    android:background="@drawable/textlines">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -176,6 +219,7 @@
                         android:textStyle="bold"
                         android:padding="10dp"
                         android:layout_weight="5"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -186,7 +230,15 @@
                         android:padding="10dp"
                         android:layout_weight="1"
                         android:gravity="center"/>
+
                 </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_view_snacks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:overScrollMode="never"/>
+
                 <Button
                     android:id="@+id/add_food_snacks"
                     android:layout_width="match_parent"
@@ -198,8 +250,8 @@
                     android:textColor="@color/text_blue"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"/>
-            </LinearLayout>
 
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

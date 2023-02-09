@@ -7,25 +7,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.nicklastest.R;
-import com.example.nicklastest.fragments.AddFoodFragment;
-
+import com.example.nicklastest.models.SizedProduct.SizedProductDisplay;
 import java.util.Calendar;
 
 
 public class DiaryFragment extends Fragment implements View.OnClickListener {
-    DatePickerDialog picker;
-    View diaryDailyIntake;
-    Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
-    Calendar cldr;
-    int currentDay, currentMonth, day, month, year;
-    String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+    private final String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+    private DatePickerDialog picker;
+    private View diaryDailyIntake;
+    private Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
+    private RecyclerView recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks;
+    private Calendar cldr;
+    private int currentDay, currentMonth, day, month, year;
+    private CustomAdapter adapter;
+    private final SizedProductDisplay[] products = {
+            new SizedProductDisplay("Product1", "This is a product", 101),
+            new SizedProductDisplay("Product2", "This is a product2", 102),
+            new SizedProductDisplay("Product3", "This is a product3", 103)};
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,7 +42,18 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ASSIGNING ELEMENTS
         assignVariables(view);
+
+        // Displays products in each Meal
+        adapter = new CustomAdapter(products);
+        RecyclerView[] recViews = { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
+        for (RecyclerView recView : recViews) {
+            recView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recView.setAdapter(adapter);
+        }
+
+        // TODO: FETCH DATA FROM DATABASE AND DISPLAY PRODUCTS AND MEAL CALORIES (DO NOT DELETE!!)
     }
 
     @Override
@@ -153,6 +170,11 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         addFoodLunch = view.findViewById(R.id.add_food_lunch);
         addFoodDinner = view.findViewById(R.id.add_food_dinner);
         addFoodSnacks = view.findViewById(R.id.add_food_snacks);
+        recViewBreakfast = view.findViewById(R.id.list_view_breakfast);
+        recViewLunch = view.findViewById(R.id.list_view_lunch);
+        recViewDinner = view.findViewById(R.id.list_view_dinner);
+        recViewSnacks = view.findViewById(R.id.list_view_snacks);
+
         datePickerBtn.setOnClickListener(this);
         backDateBtn.setOnClickListener(this);
         forwardDateBtn.setOnClickListener(this);
@@ -162,12 +184,50 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         addFoodSnacks.setOnClickListener(this);
     }
 
-    public void OpenAddFood(String title) {
-        AddFoodFragment addFoodFragment = new AddFoodFragment();
-        addFoodFragment = addFoodFragment.newInstance(title);
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, addFoodFragment).addToBackStack(null).commit();
+    public void OpenAddFood(String mealTime) {
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new AddFoodFragment().newInstance(mealTime))
+                .addToBackStack(null)
+                .commit();
     }
 
-    // TODO Make GET request on MealProgress after AddFoodFragment POST/PUT request
+
+    public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>  {
+        private SizedProductDisplay[] products;
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView title, description, calCount;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                title = itemView.findViewById(R.id.text_item_title);
+                description = itemView.findViewById(R.id.text_item_description);
+                calCount = itemView.findViewById(R.id.text_item_calorie_count);
+            }
+        }
+
+        public CustomAdapter(SizedProductDisplay[] products) {
+            this.products = products;
+        }
+
+        @Override
+        public CustomAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.added_food_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(CustomAdapter.ViewHolder holder, int position) {
+            SizedProductDisplay item = products[position];
+            holder.title.setText(item.getName());
+            holder.description.setText(item.getDescription());
+            holder.calCount.setText(String.format("%s", products[position].getCalorieCount()));
+        }
+
+        @Override
+        public int getItemCount() {
+            return products.length;
+        }
+    }
 }

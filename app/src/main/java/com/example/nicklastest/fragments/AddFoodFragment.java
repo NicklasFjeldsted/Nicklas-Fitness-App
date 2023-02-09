@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.nicklastest.R;
@@ -37,6 +38,7 @@ public class AddFoodFragment extends Fragment {
     private TextView mealTimeText;
     private PagerAdapter pagerAdapter;
     private String[] titles = new String[] { "All", "My Meals", "My Recipes" };
+    private ListView listView;
 
     public static AddFoodFragment newInstance(String param1) {
         AddFoodFragment fragment = new AddFoodFragment();
