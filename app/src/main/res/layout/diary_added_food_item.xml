@@ -21,6 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="161"
+            android:paddingEnd="10dp"
             android:gravity="end"/>
     </LinearLayout>
     <androidx.legacy.widget.Space

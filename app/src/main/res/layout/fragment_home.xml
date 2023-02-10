@@ -38,7 +38,7 @@
 
     <include
         android:id="@+id/include_goal_layout"
-        layout="@layout/calorie_goal_item"
+        layout="@layout/home_calorie_goal_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/card_view_for_image"
@@ -52,7 +52,7 @@
         android:weightSum="9">
         <include
             android:id="@+id/steps_counter_layout"
-            layout="@layout/steps_counter"
+            layout="@layout/home_steps_counter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
@@ -63,7 +63,7 @@
             android:layout_weight="1"/>
         <include
             android:id="@+id/exercise_item_layout"
-            layout="@layout/exercise_item"
+            layout="@layout/home_exercise_item"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"

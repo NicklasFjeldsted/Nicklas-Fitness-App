@@ -2,6 +2,7 @@ package com.example.nicklastest.fragments;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,23 +15,44 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nicklastest.R;
+import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
+import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
+import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
 import com.example.nicklastest.models.SizedProduct.SizedProductDisplay;
+import com.example.nicklastest.models.User.DirectUserResponse;
+import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
+import com.example.nicklastest.services.UserPlanService;
+import com.example.nicklastest.services.UserService;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class DiaryFragment extends Fragment implements View.OnClickListener {
     private final String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
     private DatePickerDialog picker;
+    private TextView goalText, foodText, exerciseText, remainingText, breakfastCalText, lunchCalText, dinnerCalText, snacksCalText;
     private View diaryDailyIntake;
     private Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
     private RecyclerView recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks;
     private Calendar cldr;
     private int currentDay, currentMonth, day, month, year;
     private CustomAdapter adapter;
-    private final SizedProductDisplay[] products = {
-            new SizedProductDisplay("Product1", "This is a product", 101),
-            new SizedProductDisplay("Product2", "This is a product2", 102),
-            new SizedProductDisplay("Product3", "This is a product3", 103)};
+    private DirectUserPlanResponse userPlan;
+    private DirectPlanProgressResponse currentPlanProgress;
+
 
 
     @Override
@@ -45,12 +67,37 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         // ASSIGNING ELEMENTS
         assignVariables(view);
 
-        // Displays products in each Meal
-        adapter = new CustomAdapter(products);
-        RecyclerView[] recViews = { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
-        for (RecyclerView recView : recViews) {
-            recView.setLayoutManager(new LinearLayoutManager(getContext()));
-            recView.setAdapter(adapter);
+        if(userPlan == null) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://10.0.2.2:5000/api/UserPlan/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                    .build();
+
+            UserPlanService service = retrofit.create(UserPlanService.class);
+            service.GetById(1)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new DisposableObserver<DirectUserPlanResponse>() {
+                        @Override
+                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull DirectUserPlanResponse response) {
+                            Log.d("Success", "Successfully fetched data...");
+                            userPlan = new DirectUserPlanResponse(response.getUserPlanID(), response.getStartWeight(), response.getStartDate(), response.getWeightGoal(), response.getWeeklyGoal(), response.getPlanProgress(), response.getActivityLevelID());
+                            setAdapter();
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                            Log.wtf("Error", "There was a an error...");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d("Completed", "Completed the subscription successfully.");
+                            dispose();
+                        }
+                    });
         }
 
         // TODO: FETCH DATA FROM DATABASE AND DISPLAY PRODUCTS AND MEAL CALORIES (DO NOT DELETE!!)
@@ -99,6 +146,30 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             case R.id.add_food_snacks: {
                 OpenAddFood("Snacks");
                 break;
+            }
+        }
+    }
+
+    public void setAdapter() {
+        if(userPlan.getUserPlanID() == 1) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH); // DATE FORMAT EXAMPLE 2023-01-31
+
+            String currentDay = String.format("%s-%s-%s", year, month, day);
+            for (DirectPlanProgressResponse planProgress : userPlan.getPlanProgress()) { // GETS ALL PLAN PROGRESS
+                Date result = new SimpleDateFormat("ddMMMyyyy HH:mm",Locale.ENGLISH).parse(planProgress.getProgressDate().toString());
+                Log.d("ASD", planProgress.getProgressDate());
+                String apiDay = String.format("%s", dateFormat.format(planProgress.getProgressDate()));
+                if(dateFormat.format(apiDay) == dateFormat.format(currentDay)) { // PLAN PROGRESS EXISTS IN USERPLAN
+                    currentPlanProgress = planProgress;
+                    Log.d("SUCCESS", "FOUND DATE");
+                }
+            }
+            RecyclerView[] recViews = { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
+            for (int i = 0; i < 4; i++) {
+                List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts();
+                adapter = new CustomAdapter(products);
+                recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
+                recViews[i].setAdapter(adapter);
             }
         }
     }
@@ -166,10 +237,21 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         datePickerBtn = diaryDailyIntake.findViewById(R.id.calender_datePicker_btn);
         backDateBtn = diaryDailyIntake.findViewById(R.id.calender_back_btn);
         forwardDateBtn = diaryDailyIntake.findViewById(R.id.calender_forward_btn);
+        goalText = diaryDailyIntake.findViewById(R.id.text_goal_amount);
+        foodText = diaryDailyIntake.findViewById(R.id.text_food_amount);
+        exerciseText = diaryDailyIntake.findViewById(R.id.text_exercise_amount);
+        remainingText = diaryDailyIntake.findViewById(R.id.text_remaining_amount);
+
         addFoodBreakfast = view.findViewById(R.id.add_food_breakfast);
         addFoodLunch = view.findViewById(R.id.add_food_lunch);
         addFoodDinner = view.findViewById(R.id.add_food_dinner);
         addFoodSnacks = view.findViewById(R.id.add_food_snacks);
+
+        breakfastCalText = view.findViewById(R.id.text_breakfast_calories);
+        lunchCalText = view.findViewById(R.id.text_lunch_calories);
+        dinnerCalText = view.findViewById(R.id.text_dinner_calories);
+        snacksCalText = view.findViewById(R.id.text_snacks_calories);
+
         recViewBreakfast = view.findViewById(R.id.list_view_breakfast);
         recViewLunch = view.findViewById(R.id.list_view_lunch);
         recViewDinner = view.findViewById(R.id.list_view_dinner);
@@ -192,9 +274,8 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                 .commit();
     }
 
-
     public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>  {
-        private SizedProductDisplay[] products;
+        private List<DirectSizedProductResponse> products;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public TextView title, description, calCount;
@@ -207,27 +288,27 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        public CustomAdapter(SizedProductDisplay[] products) {
+        public CustomAdapter(List<DirectSizedProductResponse> products) {
             this.products = products;
         }
 
         @Override
         public CustomAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.added_food_item, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.diary_added_food_item, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(CustomAdapter.ViewHolder holder, int position) {
-            SizedProductDisplay item = products[position];
-            holder.title.setText(item.getName());
-            holder.description.setText(item.getDescription());
-            holder.calCount.setText(String.format("%s", products[position].getCalorieCount()));
+            DirectSizedProductResponse item = products.get(position);
+            holder.title.setText(item.getProduct().getProductName());
+            holder.description.setText(String.format("%s., %s, %s", 160, item.getProduct().getProductManufacturer(), item.getServingSize() * 100));
+            holder.calCount.setText(String.format("%s", 100));
         }
 
         @Override
         public int getItemCount() {
-            return products.length;
+            return products.size();
         }
     }
 }

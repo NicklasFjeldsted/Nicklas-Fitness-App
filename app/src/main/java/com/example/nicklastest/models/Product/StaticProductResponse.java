@@ -13,30 +13,33 @@ public class StaticProductResponse {
     @SerializedName("productName")
     @Expose
     private String productName;
+    @SerializedName("productManufacturer")
+    @Expose
+    private String productManufacturer;
     @SerializedName("energyAmount")
     @Expose
-    private Integer energyAmount;
+    private Double energyAmount;
     @SerializedName("fatAmount")
     @Expose
-    private Integer fatAmount;
+    private Double fatAmount;
     @SerializedName("saturatedFatAmount")
     @Expose
-    private Integer saturatedFatAmount;
+    private Double saturatedFatAmount;
     @SerializedName("carbohydrateAmount")
     @Expose
-    private Integer carbohydrateAmount;
+    private Double carbohydrateAmount;
     @SerializedName("sugarAmount")
     @Expose
-    private Integer sugarAmount;
+    private Double sugarAmount;
     @SerializedName("fiberAmount")
     @Expose
-    private Integer fiberAmount;
+    private Double fiberAmount;
     @SerializedName("proteinAmount")
     @Expose
-    private Integer proteinAmount;
+    private Double proteinAmount;
     @SerializedName("saltAmount")
     @Expose
-    private Integer saltAmount;
+    private Double saltAmount;
 
     public Integer getProductID() {
         return productID;
@@ -62,67 +65,75 @@ public class StaticProductResponse {
         this.productName = productName;
     }
 
-    public Integer getEnergyAmount() {
+    public String getProductManufacturer() {
+        return productManufacturer;
+    }
+
+    public void setProductManufacturer(String productManufacturer) {
+        this.productManufacturer = productManufacturer;
+    }
+
+    public Double getEnergyAmount() {
         return energyAmount;
     }
 
-    public void setEnergyAmount(Integer energyAmount) {
+    public void setEnergyAmount(Double energyAmount) {
         this.energyAmount = energyAmount;
     }
 
-    public Integer getFatAmount() {
+    public Double getFatAmount() {
         return fatAmount;
     }
 
-    public void setFatAmount(Integer fatAmount) {
+    public void setFatAmount(Double fatAmount) {
         this.fatAmount = fatAmount;
     }
 
-    public Integer getSaturatedFatAmount() {
+    public Double getSaturatedFatAmount() {
         return saturatedFatAmount;
     }
 
-    public void setSaturatedFatAmount(Integer saturatedFatAmount) {
+    public void setSaturatedFatAmount(Double saturatedFatAmount) {
         this.saturatedFatAmount = saturatedFatAmount;
     }
 
-    public Integer getCarbohydrateAmount() {
+    public Double getCarbohydrateAmount() {
         return carbohydrateAmount;
     }
 
-    public void setCarbohydrateAmount(Integer carbohydrateAmount) {
+    public void setCarbohydrateAmount(Double carbohydrateAmount) {
         this.carbohydrateAmount = carbohydrateAmount;
     }
 
-    public Integer getSugarAmount() {
+    public Double getSugarAmount() {
         return sugarAmount;
     }
 
-    public void setSugarAmount(Integer sugarAmount) {
+    public void setSugarAmount(Double sugarAmount) {
         this.sugarAmount = sugarAmount;
     }
 
-    public Integer getFiberAmount() {
+    public Double getFiberAmount() {
         return fiberAmount;
     }
 
-    public void setFiberAmount(Integer fiberAmount) {
+    public void setFiberAmount(Double fiberAmount) {
         this.fiberAmount = fiberAmount;
     }
 
-    public Integer getProteinAmount() {
+    public Double getProteinAmount() {
         return proteinAmount;
     }
 
-    public void setProteinAmount(Integer proteinAmount) {
+    public void setProteinAmount(Double proteinAmount) {
         this.proteinAmount = proteinAmount;
     }
 
-    public Integer getSaltAmount() {
+    public Double getSaltAmount() {
         return saltAmount;
     }
 
-    public void setSaltAmount(Integer saltAmount) {
+    public void setSaltAmount(Double saltAmount) {
         this.saltAmount = saltAmount;
     }
 }

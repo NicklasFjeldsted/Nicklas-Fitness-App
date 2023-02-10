@@ -8,11 +8,14 @@
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/drawable/ic_baseline_local_fire_department_24.xml" value="0.1625" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/drawable/rounded_edge.xml" value="0.299" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/drawable/spacer_medium.xml" value="0.25" />
+        <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/drawable/spacer_medium_high.xml" value="0.299" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/drawable/textlines.xml" value="0.299" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/add_food_recent_food_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/add_food_top.xml" value="0.30129589632829373" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/added_food_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/calorie_goal_item.xml" value="0.33" />
+        <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/diary_added_food_item.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/diary_daily_intake.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/exercise_item.xml" value="0.33" />
         <entry key="..\:/Users/nfo/AndroidStudioProjects/NicklasApp/app/src/main/res/layout/fragment_add_food.xml" value="0.33" />
