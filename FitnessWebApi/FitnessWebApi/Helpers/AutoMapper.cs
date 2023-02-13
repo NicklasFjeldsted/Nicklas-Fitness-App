@@ -39,7 +39,8 @@
 
 			CreateMap<PlanProgress, DirectPlanProgressResponse>();
 			CreateMap<PlanProgress, StaticPlanProgressResponse>();
-			CreateMap<PlanProgressRequest,PlanProgress >();
+			CreateMap<PlanProgressRequest,PlanProgress >()
+				.ForMember(x => x.ProgressMeals, y => y.Ignore());
 
 			CreateMap<UserMeal, DirectUserMealResponse>();
 			CreateMap<UserMeal, StaticUserMealResponse>();

@@ -12,7 +12,7 @@
 
 		public double WeeklyGoal { get; set; }
 
-		public List<StaticPlanProgressResponse> PlanProgress { get; set; } = new List<StaticPlanProgressResponse>();
+		public List<DirectPlanProgressResponse> PlanProgress { get; set; } = new List<DirectPlanProgressResponse>();
 
 		public StaticActivityLevelResponse ActivityLevel { get; set; }
 	}

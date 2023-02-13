@@ -100,6 +100,7 @@ namespace FitnessWebApi.Database
 				{
 					ProductID = 1,
 					ProductName = "Makrel i tomat",
+					ProductManufacturer = "REMA 1000",
 					ProductCode = " 7032069719657",
 					EnergyAmount = 160,
 					FatAmount = 9.3,

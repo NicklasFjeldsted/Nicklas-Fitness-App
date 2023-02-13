@@ -8,6 +8,9 @@
 		[Column(TypeName = "nvarchar(96)")]
 		public string ProductName { get; set; }
 
+		[Column(TypeName = "nvarchar(96)")]
+		public string ProductManufacturer { get; set; }
+
 		[Column(TypeName = "nvarchar(32)")]
 		public string ProductCode { get; set; }
 

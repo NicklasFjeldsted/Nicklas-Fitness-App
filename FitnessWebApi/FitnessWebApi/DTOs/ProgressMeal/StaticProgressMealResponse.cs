@@ -6,6 +6,6 @@
 
 		public int MealTimeID { get; set; }
 
-		public int PlanProgressID { get; set; }
+		public List<DirectSizedProductResponse> SizedProducts { get; set; } = new List<DirectSizedProductResponse>();
 	}
 }

@@ -3,7 +3,9 @@
 	public class ProductRequest
 	{
 		public string ProductName { get; set; }
-		
+
+		public string ProductManufacturer { get; set; }
+
 		public string ProductCode { get; set; }
 
 		public double EnergyAmount { get; set; }
