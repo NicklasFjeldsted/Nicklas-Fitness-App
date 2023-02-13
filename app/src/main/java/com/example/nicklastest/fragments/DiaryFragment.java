@@ -12,9 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nicklastest.R;
+import com.example.nicklastest.UserPlanSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
 import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
@@ -26,6 +28,7 @@ import com.example.nicklastest.services.UserService;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class DiaryFragment extends Fragment implements View.OnClickListener {
+    private UserPlanSharedViewModel viewModel;
     private final String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
     private DatePickerDialog picker;
     private TextView goalText, foodText, exerciseText, remainingText, breakfastCalText, lunchCalText, dinnerCalText, snacksCalText;
@@ -48,16 +52,31 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     private Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
     private RecyclerView recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks;
     private Calendar cldr;
-    private int currentDay, currentMonth, day, month, year;
+    private int currentDay, currentMonth, day, month, year, goalVal, exerciseVal, remainingVal;
     private CustomAdapter adapter;
     private DirectUserPlanResponse userPlan;
     private DirectPlanProgressResponse currentPlanProgress;
+    private RecyclerView[] recViews;
+    private TextView[] textViewMeals;
 
-
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-       return inflater.inflate(R.layout.fragment_diary, container, false);
+       View view =  inflater.inflate(R.layout.fragment_diary, container, false);
+
+        viewModel.getSelected().observe(getViewLifecycleOwner(), item -> {
+            // Update the UI with the selected item'
+            userPlan = item;
+            goalVal = 2800;
+            setAdapter();
+        });
+
+        return view;
     }
 
     @Override
@@ -66,41 +85,6 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
 
         // ASSIGNING ELEMENTS
         assignVariables(view);
-
-        if(userPlan == null) {
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:5000/api/UserPlan/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                    .build();
-
-            UserPlanService service = retrofit.create(UserPlanService.class);
-            service.GetById(1)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new DisposableObserver<DirectUserPlanResponse>() {
-                        @Override
-                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull DirectUserPlanResponse response) {
-                            Log.d("Success", "Successfully fetched data...");
-                            userPlan = new DirectUserPlanResponse(response.getUserPlanID(), response.getStartWeight(), response.getStartDate(), response.getWeightGoal(), response.getWeeklyGoal(), response.getPlanProgress(), response.getActivityLevelID());
-                            setAdapter();
-                        }
-
-                        @Override
-                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                            Log.wtf("Error", "There was a an error...");
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d("Completed", "Completed the subscription successfully.");
-                            dispose();
-                        }
-                    });
-        }
-
-        // TODO: FETCH DATA FROM DATABASE AND DISPLAY PRODUCTS AND MEAL CALORIES (DO NOT DELETE!!)
     }
 
     @Override
@@ -151,27 +135,41 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setAdapter() {
-        if(userPlan.getUserPlanID() == 1) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH); // DATE FORMAT EXAMPLE 2023-01-31
+        if(userPlan.getUserPlanID() != 0) {
+            goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d{1})(?=\\d)", ","));
+            String currentPlanProgressDate = String.format("%s/%s/%s", day, month +1, year);
+            currentPlanProgress = viewModel.getPlanProgress(currentPlanProgressDate);
 
-            String currentDay = String.format("%s-%s-%s", year, month, day);
-            for (DirectPlanProgressResponse planProgress : userPlan.getPlanProgress()) { // GETS ALL PLAN PROGRESS
-                Date result = new SimpleDateFormat("ddMMMyyyy HH:mm",Locale.ENGLISH).parse(planProgress.getProgressDate().toString());
-                Log.d("ASD", planProgress.getProgressDate());
-                String apiDay = String.format("%s", dateFormat.format(planProgress.getProgressDate()));
-                if(dateFormat.format(apiDay) == dateFormat.format(currentDay)) { // PLAN PROGRESS EXISTS IN USERPLAN
-                    currentPlanProgress = planProgress;
-                    Log.d("SUCCESS", "FOUND DATE");
+            if(currentPlanProgress != null) {
+                exerciseVal = 100;
+                int totalCalories = 0;
+                for (int i = 0; i < 4; i++) {
+                    List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts();
+                    int sumOfCalories = viewModel.getSumOfCalories(products);
+                    textViewMeals[i].setText(String.format("%s", sumOfCalories));
+                    totalCalories += sumOfCalories;
+                    adapter = new CustomAdapter(products);
+                    recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
+                    recViews[i].setAdapter(adapter);
                 }
+                setDiaryDailyIntake(totalCalories);
+                return;
+
             }
-            RecyclerView[] recViews = { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
-            for (int i = 0; i < 4; i++) {
-                List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts();
-                adapter = new CustomAdapter(products);
-                recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
-                recViews[i].setAdapter(adapter);
-            }
+            setDiaryDailyIntake(0);
         }
+    }
+
+    public void setDiaryDailyIntake(int totalCal) {
+        exerciseText.setText(String.valueOf(exerciseVal));
+        if(totalCal != 0) { // If data has been provided
+            foodText.setText(String.valueOf(totalCal));
+            remainingVal = goalVal - totalCal + exerciseVal;
+            remainingText.setText(String.valueOf(remainingVal));
+            return;
+        }
+        foodText.setText("0");
+        remainingText.setText(String.valueOf(goalVal + exerciseVal));
     }
 
     public void SetDate(boolean increment) {
@@ -223,6 +221,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                 datePickerBtn.setText("Yesterday");
             }
         }
+        setAdapter();
     }
 
     public void assignVariables(View view) {
@@ -251,11 +250,13 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         lunchCalText = view.findViewById(R.id.text_lunch_calories);
         dinnerCalText = view.findViewById(R.id.text_dinner_calories);
         snacksCalText = view.findViewById(R.id.text_snacks_calories);
+        textViewMeals = new TextView[] { breakfastCalText, lunchCalText, dinnerCalText, snacksCalText };
 
         recViewBreakfast = view.findViewById(R.id.list_view_breakfast);
         recViewLunch = view.findViewById(R.id.list_view_lunch);
         recViewDinner = view.findViewById(R.id.list_view_dinner);
         recViewSnacks = view.findViewById(R.id.list_view_snacks);
+        recViews = new RecyclerView[] { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
 
         datePickerBtn.setOnClickListener(this);
         backDateBtn.setOnClickListener(this);

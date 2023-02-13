@@ -16,7 +16,7 @@
             android:padding="20dp">
 
             <Button
-                android:id="@+id/calorieButton"
+                android:id="@+id/btn_calorie_goal_item"
                 android:layout_width="match_parent"
                 android:layout_height="211dp"
                 android:background="@android:color/transparent" />
@@ -39,7 +39,7 @@
                 android:textSize="14sp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/subtitle"
                 android:layout_marginTop="25dp"
@@ -59,9 +59,7 @@
                         app:cpb_background_progressbar_color="@color/main_background"
                         app:cpb_background_progressbar_width="10dp"
                         app:cpb_indeterminate_mode="false"
-                        app:cpb_progress="500"
                         app:cpb_progress_direction="to_right"
-                        app:cpb_progress_max="2500"
                         app:cpb_progressbar_color="#2583fe"
                         app:cpb_progressbar_width="10dp"
                         app:cpb_round_border="false"
@@ -72,7 +70,7 @@
                         app:layout_constraintVertical_bias="0.0" />
 
                     <TextView
-                        android:id="@+id/remaining_calories"
+                        android:id="@+id/text_remaining_calories"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
@@ -92,11 +90,11 @@
                         app:layout_constraintBottom_toBottomOf="@+id/circularProgressBar"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/remaining_calories"
+                        app:layout_constraintTop_toBottomOf="@+id/text_remaining_calories"
                         app:layout_constraintVertical_bias="0.0" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <View
+                <androidx.legacy.widget.Space
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
@@ -135,7 +133,7 @@
                                 android:text="Base Goal" />
 
                             <TextView
-                                android:id="@+id/base_goal"
+                                android:id="@+id/text_base_goal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/black"
@@ -167,7 +165,7 @@
                                 android:text="Food" />
 
                             <TextView
-                                android:id="@+id/current_calories"
+                                android:id="@+id/text_current_calories"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/black"
@@ -199,7 +197,7 @@
                                 android:text="Exercise" />
 
                             <TextView
-                                android:id="@+id/burned_calories"
+                                android:id="@+id/text_burned_calories"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/black"
@@ -208,8 +206,6 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-
         </RelativeLayout>
-
     </androidx.cardview.widget.CardView>
 </layout>

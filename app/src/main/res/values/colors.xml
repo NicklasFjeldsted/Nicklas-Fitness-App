@@ -20,4 +20,6 @@
     <color name="hint_text_color">#767676</color>
     <color name="search_view_icon">#636363</color>
     <color name="food_item_background">#F6F6F7</color>
+    <color name="add_recent_food_background">#e3f4fe</color>
+    <color name="add_recent_food_button">#005aeb</color>
 </resources>

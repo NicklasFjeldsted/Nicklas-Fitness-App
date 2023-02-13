@@ -39,7 +39,7 @@
                     android:rotation="10"
                     app:tint="@color/pink"/>
                 <TextView
-                    android:id="@+id/step_count"
+                    android:id="@+id/text_step_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"

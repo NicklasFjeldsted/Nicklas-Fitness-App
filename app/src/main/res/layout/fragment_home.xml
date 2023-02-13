@@ -33,31 +33,31 @@
         android:layout_toRightOf="@id/card_view_for_image"
         android:text="We're so happy to see you again!"
         android:textColor="@color/black"
-        android:textSize="30dp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <include
-        android:id="@+id/include_goal_layout"
+        android:id="@+id/goal_item_layout"
         layout="@layout/home_calorie_goal_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/card_view_for_image"
         android:layout_marginTop="30dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/include_goal_layout"
+        android:layout_below="@id/goal_item_layout"
         android:layout_marginTop="30dp"
         android:orientation="horizontal"
         android:weightSum="9">
         <include
-            android:id="@+id/steps_counter_layout"
+            android:id="@+id/steps_item_layout"
             layout="@layout/home_steps_counter"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_below="@id/include_goal_layout" />
-        <View
+            android:layout_weight="4" />
+        <androidx.legacy.widget.Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
@@ -66,7 +66,6 @@
             layout="@layout/home_exercise_item"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:layout_below="@id/include_goal_layout" />
+            android:layout_weight="4" />
     </LinearLayout>
 </RelativeLayout>

@@ -39,7 +39,7 @@
                     android:rotation="10"
                     app:tint="@color/fire_orange"/>
                 <TextView
-                    android:id="@+id/calories_burned"
+                    android:id="@+id/text_exercise_item_calories_burned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
