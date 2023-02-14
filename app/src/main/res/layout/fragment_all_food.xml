@@ -28,8 +28,7 @@
             app:iconTint="@color/add_recent_food_button"
             android:textColor="@color/add_recent_food_button"
             android:backgroundTint="@color/white"
-            android:text="Scan a Barcode"
-            />
+            android:text="Scan a Barcode" />
 
         <androidx.legacy.widget.Space
             android:layout_width="0dp"
@@ -86,6 +85,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
-        />
+        android:padding="10dp"/>
 </LinearLayout>
 

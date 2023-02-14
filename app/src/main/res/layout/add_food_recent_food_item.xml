@@ -18,15 +18,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Milk"
-            android:textStyle="bold"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text_item_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="161 kal., Arla, 350,0 gram"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

@@ -53,7 +53,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     private RecyclerView recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks;
     private Calendar cldr;
     private int currentDay, currentMonth, day, month, year, goalVal, exerciseVal, remainingVal;
-    private CustomAdapter adapter;
+    private DiaryRecyclerAdapter adapter;
     private DirectUserPlanResponse userPlan;
     private DirectPlanProgressResponse currentPlanProgress;
     private RecyclerView[] recViews;
@@ -148,7 +148,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                     int sumOfCalories = viewModel.getSumOfCalories(products);
                     textViewMeals[i].setText(String.format("%s", sumOfCalories));
                     totalCalories += sumOfCalories;
-                    adapter = new CustomAdapter(products);
+                    adapter = new DiaryRecyclerAdapter(products);
                     recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
                     recViews[i].setAdapter(adapter);
                 }
@@ -275,7 +275,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                 .commit();
     }
 
-    public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>  {
+    public class DiaryRecyclerAdapter extends RecyclerView.Adapter<DiaryRecyclerAdapter.ViewHolder>  {
         private List<DirectSizedProductResponse> products;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
@@ -289,18 +289,18 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        public CustomAdapter(List<DirectSizedProductResponse> products) {
+        public DiaryRecyclerAdapter(List<DirectSizedProductResponse> products) {
             this.products = products;
         }
 
         @Override
-        public CustomAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DiaryRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.diary_added_food_item, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(CustomAdapter.ViewHolder holder, int position) {
+        public void onBindViewHolder(DiaryRecyclerAdapter.ViewHolder holder, int position) {
             DirectSizedProductResponse item = products.get(position);
             holder.title.setText(item.getProduct().getProductName());
             holder.description.setText(String.format("%s., %s, %s", 160, item.getProduct().getProductManufacturer(), item.getServingSize() * 100));

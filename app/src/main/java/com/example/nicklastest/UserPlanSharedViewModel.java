@@ -28,6 +28,14 @@ public class UserPlanSharedViewModel extends ViewModel {
         return selected;
     }
 
+    public Integer getCaloriesOfItem(DirectSizedProductResponse sizedProduct) {
+        double totalCalories = 0;
+        StaticProductResponse product = sizedProduct.getProduct();
+        totalCalories += product.getFatAmount() * 9;
+        totalCalories += (product.getCarbohydrateAmount() + product.getProteinAmount()) * 4;
+        return (int)Math.round(totalCalories);
+    }
+
     public Integer getSumOfCalories(List<DirectSizedProductResponse> sizedProducts) {
         double totalCalories = 0;
         for(DirectSizedProductResponse sizedProduct : sizedProducts) {
