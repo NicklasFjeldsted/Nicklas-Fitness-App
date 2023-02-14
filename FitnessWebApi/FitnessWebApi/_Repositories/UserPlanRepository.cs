@@ -32,6 +32,9 @@
 				.Include(x => x.User)
 				.Include(x => x.ActivityLevel)
 				.Include(x => x.PlanProgress)
+				.ThenInclude(x => x.ProgressMeals)
+				.ThenInclude(x => x.SizedProducts)
+				.ThenInclude(x => x.Product)
 				.Where(x => x.UserPlanID == id)
 				.FirstOrDefaultAsync();
 		}

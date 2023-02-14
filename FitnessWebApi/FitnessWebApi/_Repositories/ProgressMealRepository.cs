@@ -47,8 +47,10 @@
 			ProgressMeal progressMeal = await GetById(id);
 			if(progressMeal != null)
 			{
-				progressMeal.SizedProducts = request.SizedProducts;
+				_context.AddRange(request.SizedProducts);
 			}
+
+			await _context.SaveChangesAsync();
 
 			return progressMeal;
 		}

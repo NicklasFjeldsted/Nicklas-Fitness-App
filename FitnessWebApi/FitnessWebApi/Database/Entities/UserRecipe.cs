@@ -19,6 +19,6 @@
 		[Column(TypeName = "nvarchar(512)")]
 		public string Instructions { get; set; }
 
-		public List<SizedProduct> SizedProducts { get; set; }
+		public ICollection<SizedProduct> SizedProducts { get; set; }
 	}
 }

@@ -4,8 +4,6 @@
 	{
 		public int MealTimeID { get; set; }
 	
-		public List<SizedProductRequest> SizedProducts { get; set; } = new List<SizedProductRequest>();
-
-		public int PlanProgressID { get; set; }
+		public List<SizedProductRequest> SizedProducts { get; set; }
 	}
 }

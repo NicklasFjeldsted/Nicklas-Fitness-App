@@ -201,6 +201,9 @@ namespace FitnessWebApi.Migrations
                     b.Property<string>("ProductCode")
                         .HasColumnType("nvarchar(32)");
 
+                    b.Property<string>("ProductManufacturer")
+                        .HasColumnType("nvarchar(96)");
+
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(96)");
 
@@ -233,6 +236,7 @@ namespace FitnessWebApi.Migrations
                             FatAmount = 9.3000000000000007,
                             FiberAmount = 0.0,
                             ProductCode = " 7032069719657",
+                            ProductManufacturer = "REMA 1000",
                             ProductName = "Makrel i tomat",
                             ProteinAmount = 12.0,
                             SaltAmount = 0.63,
@@ -362,15 +366,15 @@ namespace FitnessWebApi.Migrations
                         {
                             UserID = 1,
                             BirthdayDate = new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6099),
+                            CreatedAt = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1591),
                             Email = "example.com",
                             FirstName = "Nicklas",
                             GenderID = 1,
                             Height = 181.0,
                             LastName = "Osbeck",
-                            LastLogin = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101),
-                            ModifiedAt = new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101),
-                            Password = "$2a$10$6P5tmZPLY5mUToQQO4puZeUJFAj5e/DBD8SSUIqb/OBwbNp62HX2m",
+                            LastLogin = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1592),
+                            ModifiedAt = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1591),
+                            Password = "$2a$10$/UYUuUS9fQcGLkfVG6YbgOU4AJ2feOz9DrPNtNTjsaePf/EiM1XJS",
                             UserPlanID = 1
                         });
                 });
