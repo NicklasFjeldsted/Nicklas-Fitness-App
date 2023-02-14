@@ -58,6 +58,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     private DirectPlanProgressResponse currentPlanProgress;
     private RecyclerView[] recViews;
     private TextView[] textViewMeals;
+    private boolean initialSetter = true;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
 
         viewModel.getSelected().observe(getViewLifecycleOwner(), item -> {
             // Update the UI with the selected item'
+            Log.d("OnCreateView", "UserPlan has been assigned to Item!");
             userPlan = item;
             goalVal = 2800;
             setAdapter();
@@ -113,22 +115,22 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
 
             case R.id.add_food_breakfast: {
-                OpenAddFood("Breakfast");
+                OpenAddFood(1);
                 break;
             }
 
             case R.id.add_food_lunch: {
-                OpenAddFood("Lunch");
+                OpenAddFood(2);
                 break;
             }
 
             case R.id.add_food_dinner: {
-                OpenAddFood("Dinner");
+                OpenAddFood(3);
                 break;
             }
 
             case R.id.add_food_snacks: {
-                OpenAddFood("Snacks");
+                OpenAddFood(4);
                 break;
             }
         }
@@ -137,13 +139,15 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     public void setAdapter() {
         if(userPlan.getUserPlanID() != 0) {
             goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d{1})(?=\\d)", ","));
-            String currentPlanProgressDate = String.format("%s/%s/%s", day, month +1, year);
+            String currentPlanProgressDate = String.format("%s/%s/%s", day, currentMonth == month ? month : month + 1, year);
             currentPlanProgress = viewModel.getPlanProgress(currentPlanProgressDate);
 
+            Log.d("DoesDateExist", currentPlanProgress != null ? "TRUE" : "FALSE");
             if(currentPlanProgress != null) {
                 exerciseVal = 100;
                 int totalCalories = 0;
                 for (int i = 0; i < 4; i++) {
+                    Log.d("SetAdapter", "Products are being assigned!");
                     List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts();
                     int sumOfCalories = viewModel.getSumOfCalories(products);
                     textViewMeals[i].setText(String.format("%s", sumOfCalories));
@@ -258,6 +262,8 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         recViewSnacks = view.findViewById(R.id.list_view_snacks);
         recViews = new RecyclerView[] { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
 
+        Log.d("ASSIGN VARIABLES", "VARIABLES HAVE BEEN ASSIGNED!!!");
+
         datePickerBtn.setOnClickListener(this);
         backDateBtn.setOnClickListener(this);
         forwardDateBtn.setOnClickListener(this);
@@ -267,10 +273,13 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         addFoodSnacks.setOnClickListener(this);
     }
 
-    public void OpenAddFood(String mealTime) {
+    public void OpenAddFood(int mealTimeID) {
+
+        currentPlanProgress.getPlanProgressID();
+
         getParentFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new AddFoodFragment().newInstance(mealTime))
+                .replace(R.id.fragment_container, new AddFoodFragment().newInstance(currentPlanProgress.getPlanProgressID(), mealTimeID))
                 .addToBackStack(null)
                 .commit();
     }

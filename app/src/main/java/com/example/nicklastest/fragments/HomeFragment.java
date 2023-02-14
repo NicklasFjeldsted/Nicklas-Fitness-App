@@ -73,29 +73,10 @@ public class HomeFragment extends Fragment {
 
         viewModel.getSelected().observe(getViewLifecycleOwner(), item -> {
             // Update the UI with the selected item
-            baseGoalVal = 2800;
-            textBaseGoal.setText(String.valueOf(baseGoalVal));
-            DirectPlanProgressResponse currentPlanProgress = viewModel.getCurrentPlanProgress();
-            if(currentPlanProgress != null) {
-                burnedCaloriesVal = 100;
-                for (StaticProgressMealResponse meal : currentPlanProgress.getProgressMeals()) {
-                    currentCaloriesVal += viewModel.getSumOfCalories(meal.getSizedProducts());
-                }
-                remainingCaloriesVal = baseGoalVal - currentCaloriesVal + burnedCaloriesVal;
-
-                textCurrentCalories.setText(String.valueOf(currentCaloriesVal));
-                textBurnedCalories.setText(String.valueOf(burnedCaloriesVal));
-                textRemainingCalories.setText(String.valueOf(remainingCaloriesVal));
-
-                progressBar.setProgressMax(baseGoalVal);
-                progressBar.setProgress(currentCaloriesVal);
-
-
-            } else {
-                textCurrentCalories.setText(String.valueOf(0));
-                textBurnedCalories.setText(String.valueOf(0));
-                textRemainingCalories.setText(String.valueOf(baseGoalVal));
-            }
+            currentCaloriesVal = 0;
+            burnedCaloriesVal = 0;
+            remainingCaloriesVal = 0;
+            displayData();
         });
 
         return view;
@@ -138,6 +119,32 @@ public class HomeFragment extends Fragment {
                             dispose();
                         }
                     });
+        }
+    }
+
+    private void displayData() {
+        baseGoalVal = 2800;
+        textBaseGoal.setText(String.valueOf(baseGoalVal));
+        DirectPlanProgressResponse currentPlanProgress = viewModel.getCurrentPlanProgress();
+        if(currentPlanProgress != null) {
+            burnedCaloriesVal = 100;
+            for (StaticProgressMealResponse meal : currentPlanProgress.getProgressMeals()) {
+                currentCaloriesVal += viewModel.getSumOfCalories(meal.getSizedProducts());
+            }
+            remainingCaloriesVal = baseGoalVal - currentCaloriesVal + burnedCaloriesVal;
+
+            textCurrentCalories.setText(String.valueOf(currentCaloriesVal));
+            textBurnedCalories.setText(String.valueOf(burnedCaloriesVal));
+            textRemainingCalories.setText(String.valueOf(remainingCaloriesVal));
+
+            progressBar.setProgressMax(baseGoalVal);
+            progressBar.setProgress(currentCaloriesVal);
+
+
+        } else {
+            textCurrentCalories.setText(String.valueOf(0));
+            textBurnedCalories.setText(String.valueOf(0));
+            textRemainingCalories.setText(String.valueOf(baseGoalVal));
         }
     }
 

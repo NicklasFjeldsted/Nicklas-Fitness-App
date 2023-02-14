@@ -17,12 +17,30 @@ public class StaticProgressMealResponse {
     @Expose
     private List<DirectSizedProductResponse> sizedProducts;
 
+    public StaticProgressMealResponse(Integer progressMealID, Integer mealTimeID, List<DirectSizedProductResponse> sizedProducts) {
+        this.progressMealID = progressMealID;
+        this.mealTimeID = mealTimeID;
+        this.sizedProducts = sizedProducts;
+    }
+
     public Integer getProgressMealID() {
         return progressMealID;
     }
 
     public Integer getMealTimeID() {
         return mealTimeID;
+    }
+
+    public void setProgressMealID(Integer progressMealID) {
+        this.progressMealID = progressMealID;
+    }
+
+    public void setMealTimeID(Integer mealTimeID) {
+        this.mealTimeID = mealTimeID;
+    }
+
+    public void setSizedProducts(List<DirectSizedProductResponse> sizedProducts) {
+        this.sizedProducts = sizedProducts;
     }
 
     public List<DirectSizedProductResponse> getSizedProducts() {

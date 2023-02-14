@@ -19,15 +19,15 @@
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="9"
             android:padding="20dp"
-            app:iconGravity="top"
             app:cornerRadius="5dp"
             app:icon="@drawable/ic_barcode"
             app:iconTint="@color/add_recent_food_button"
-            android:textColor="@color/add_recent_food_button"
+            app:iconGravity="top"
             android:backgroundTint="@color/white"
+            android:textColor="@color/add_recent_food_button"
             android:text="Scan a Barcode" />
 
         <androidx.legacy.widget.Space
@@ -37,13 +37,13 @@
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="9"
             android:padding="20dp"
-            app:iconGravity="top"
             app:cornerRadius="5dp"
             app:icon="@drawable/ic_food_add"
             app:iconTint="@color/add_recent_food_button"
+            app:iconGravity="top"
             android:textColor="@color/add_recent_food_button"
             android:backgroundTint="@color/white"
             android:text="Quick Add On" />
@@ -69,10 +69,10 @@
             android:padding="10dp"
             android:text="Recent"
             android:textAllCaps="false"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="normal"
             android:textColor="@color/black"
-            app:cornerRadius="15dp"
+            app:cornerRadius="20dp"
             app:icon="@drawable/ic_baseline_sort_24"
             app:iconTint="@color/flag_gray"
             android:backgroundTint="@color/white"
