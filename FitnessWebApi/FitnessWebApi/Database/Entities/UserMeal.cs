@@ -22,6 +22,6 @@
 		public int MealTimeID { get; set; }
 		public MealTime MealTime { get; set; }
 
-		public List<SizedProduct> SizedProducts { get; set; }
+		public ICollection<SizedProduct> SizedProducts { get; set; }
 	}
 }
