@@ -4,7 +4,7 @@
 	{
 		public DateTime ProgressDate { get; set; }
 
-		public ICollection<ProgressMealRequest> ProgressMeals { get; set; }
+		public List<ProgressMealRequest> ProgressMeals { get; set; } 
 
 		public double CurrentWeight { get; set; }
 

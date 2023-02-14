@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessWebApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20230214083730_InitialCreate")]
+    [Migration("20230214092047_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -251,7 +251,10 @@ namespace FitnessWebApi.Migrations
             modelBuilder.Entity("FitnessWebApi.Database.Entities.ProgressMeal", b =>
                 {
                     b.Property<int>("ProgressMealID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProgressMealID"));
 
                     b.Property<int>("MealTimeID")
                         .HasColumnType("int");
@@ -262,6 +265,8 @@ namespace FitnessWebApi.Migrations
                     b.HasKey("ProgressMealID");
 
                     b.HasIndex("MealTimeID");
+
+                    b.HasIndex("PlanProgressID");
 
                     b.ToTable("ProgressMeal");
                 });
@@ -364,15 +369,15 @@ namespace FitnessWebApi.Migrations
                         {
                             UserID = 1,
                             BirthdayDate = new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CreatedAt = new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5567),
+                            CreatedAt = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1591),
                             Email = "example.com",
                             FirstName = "Nicklas",
                             GenderID = 1,
                             Height = 181.0,
                             LastName = "Osbeck",
-                            LastLogin = new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5569),
-                            ModifiedAt = new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5569),
-                            Password = "$2a$10$MSoS2HiddKyOpJ/sV17C0OOBv5CEK0a76qxsq2Hn/PlsgV29QzoOq",
+                            LastLogin = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1592),
+                            ModifiedAt = new DateTime(2023, 2, 14, 9, 20, 46, 816, DateTimeKind.Utc).AddTicks(1591),
+                            Password = "$2a$10$/UYUuUS9fQcGLkfVG6YbgOU4AJ2feOz9DrPNtNTjsaePf/EiM1XJS",
                             UserPlanID = 1
                         });
                 });
@@ -504,7 +509,7 @@ namespace FitnessWebApi.Migrations
 
                     b.HasOne("FitnessWebApi.Database.Entities.PlanProgress", "PlanProgress")
                         .WithMany("ProgressMeals")
-                        .HasForeignKey("ProgressMealID")
+                        .HasForeignKey("PlanProgressID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

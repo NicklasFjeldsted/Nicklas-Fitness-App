@@ -7,9 +7,9 @@ namespace FitnessWebApi._Controllers
 	[ApiController]
 	public class UserPlanController : ControllerBase
 	{
-		private readonly UserPlanService _service;
+		private readonly IUserPlanService _service;
 
-		public UserPlanController(UserPlanService service)
+		public UserPlanController(IUserPlanService service)
 		{
 			_service = service;
 		}

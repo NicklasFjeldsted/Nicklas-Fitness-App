@@ -54,7 +54,7 @@ namespace FitnessWebApi.Database
 
 			modelBuilder.Entity<ProgressMeal>(e =>
 			{
-				e.HasOne(x => x.PlanProgress).WithMany(x => x.ProgressMeals).HasForeignKey(x => x.ProgressMealID).OnDelete(DeleteBehavior.Cascade);
+				e.HasOne(x => x.PlanProgress).WithMany(x => x.ProgressMeals).OnDelete(DeleteBehavior.Cascade);
 			});
 
 			#endregion
