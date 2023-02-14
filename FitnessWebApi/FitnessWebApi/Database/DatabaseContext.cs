@@ -52,6 +52,11 @@ namespace FitnessWebApi.Database
 			});
 
 
+			modelBuilder.Entity<ProgressMeal>(e =>
+			{
+				e.HasOne(x => x.PlanProgress).WithMany(x => x.ProgressMeals).HasForeignKey(x => x.ProgressMealID).OnDelete(DeleteBehavior.Cascade);
+			});
+
 			#endregion
 
 			#region Generated Data
@@ -93,13 +98,14 @@ namespace FitnessWebApi.Database
 					Created_At = DateTime.UtcNow,
 					Modified_At = DateTime.UtcNow,
 					Last_Login = DateTime.UtcNow,
-				}); ;
+				});
 
 			modelBuilder.Entity<Product>().HasData(
 				new Product
 				{
 					ProductID = 1,
 					ProductName = "Makrel i tomat",
+					ProductManufacturer = "REMA 1000",
 					ProductCode = " 7032069719657",
 					EnergyAmount = 160,
 					FatAmount = 9.3,

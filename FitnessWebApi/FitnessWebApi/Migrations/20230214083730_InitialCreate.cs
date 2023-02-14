@@ -60,6 +60,7 @@ namespace FitnessWebApi.Migrations
                     ProductID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductName = table.Column<string>(type: "nvarchar(96)", nullable: true),
+                    ProductManufacturer = table.Column<string>(type: "nvarchar(96)", nullable: true),
                     ProductCode = table.Column<string>(type: "nvarchar(32)", nullable: true),
                     EnergyAmount = table.Column<double>(type: "float", nullable: false),
                     FatAmount = table.Column<double>(type: "float", nullable: false),
@@ -157,8 +158,7 @@ namespace FitnessWebApi.Migrations
                 name: "ProgressMeal",
                 columns: table => new
                 {
-                    ProgressMealID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProgressMealID = table.Column<int>(type: "int", nullable: false),
                     MealTimeID = table.Column<int>(type: "int", nullable: false),
                     PlanProgressID = table.Column<int>(type: "int", nullable: false)
                 },
@@ -172,8 +172,8 @@ namespace FitnessWebApi.Migrations
                         principalColumn: "MealTimeID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProgressMeal_PlanProgress_PlanProgressID",
-                        column: x => x.PlanProgressID,
+                        name: "FK_ProgressMeal_PlanProgress_ProgressMealID",
+                        column: x => x.ProgressMealID,
                         principalTable: "PlanProgress",
                         principalColumn: "PlanProgressID",
                         onDelete: ReferentialAction.Cascade);
@@ -308,8 +308,8 @@ namespace FitnessWebApi.Migrations
 
             migrationBuilder.InsertData(
                 table: "Product",
-                columns: new[] { "ProductID", "CarbohydrateAmount", "EnergyAmount", "FatAmount", "FiberAmount", "ProductCode", "ProductName", "ProteinAmount", "SaltAmount", "SaturatedFatAmount", "SugarAmount" },
-                values: new object[] { 1, 6.2000000000000002, 160.0, 9.3000000000000007, 0.0, " 7032069719657", "Makrel i tomat", 12.0, 0.63, 1.8999999999999999, 4.0 });
+                columns: new[] { "ProductID", "CarbohydrateAmount", "EnergyAmount", "FatAmount", "FiberAmount", "ProductCode", "ProductManufacturer", "ProductName", "ProteinAmount", "SaltAmount", "SaturatedFatAmount", "SugarAmount" },
+                values: new object[] { 1, 6.2000000000000002, 160.0, 9.3000000000000007, 0.0, " 7032069719657", "REMA 1000", "Makrel i tomat", 12.0, 0.63, 1.8999999999999999, 4.0 });
 
             migrationBuilder.InsertData(
                 table: "UserPlan",
@@ -324,7 +324,7 @@ namespace FitnessWebApi.Migrations
             migrationBuilder.InsertData(
                 table: "User",
                 columns: new[] { "UserID", "BirthdayDate", "Created_At", "Email", "FirstName", "GenderID", "Height", "LastName", "Last_Login", "Modified_At", "Password", "UserPlanID" },
-                values: new object[] { 1, new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6099), "example.com", "Nicklas", 1, 181.0, "Osbeck", new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101), new DateTime(2023, 1, 31, 13, 33, 2, 316, DateTimeKind.Utc).AddTicks(6101), "$2a$10$6P5tmZPLY5mUToQQO4puZeUJFAj5e/DBD8SSUIqb/OBwbNp62HX2m", 1 });
+                values: new object[] { 1, new DateTime(2003, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5567), "example.com", "Nicklas", 1, 181.0, "Osbeck", new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5569), new DateTime(2023, 2, 14, 8, 37, 30, 723, DateTimeKind.Utc).AddTicks(5569), "$2a$10$MSoS2HiddKyOpJ/sV17C0OOBv5CEK0a76qxsq2Hn/PlsgV29QzoOq", 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlanProgress_UserPlanID",
@@ -342,11 +342,6 @@ namespace FitnessWebApi.Migrations
                 name: "IX_ProgressMeal_MealTimeID",
                 table: "ProgressMeal",
                 column: "MealTimeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProgressMeal_PlanProgressID",
-                table: "ProgressMeal",
-                column: "PlanProgressID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SizedProduct_ProductID",
