@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.nicklastest.R;
@@ -39,13 +40,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AllFoodFragment extends Fragment {
 
     private UserPlanSharedViewModel viewModel;
+    private Button btnScanBarcode;
     private RecyclerView listViewRecentFood;
     private AllFoodRecyclerAdapter adapter;
     private DirectUserPlanResponse userPlan;
     List<DirectSizedProductResponse> sizedProducts = new ArrayList<>();
     private List<SizedProductRequest> sizedProductRequests = new ArrayList<>();
 
+    private boolean initialSetter = true;
+
     private int planProgressID, mealTimeID;
+
+    public AllFoodFragment() {
+    }
 
     public static AllFoodFragment newInstance(int planProgressID, int mealTimeID) {
         AllFoodFragment fragment = new AllFoodFragment();
@@ -71,27 +78,38 @@ public class AllFoodFragment extends Fragment {
         viewModel.getSelected().observe(getViewLifecycleOwner(), item -> {
             // Update the UI with the selected item'
             userPlan = item;
-            getRecentFoods(userPlan.getPlanProgress());
+            if(initialSetter) {
+                getRecentFoods(userPlan.getPlanProgress());
+                initialSetter = false;
+            }
         });
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        viewModel.setRequests(new ArrayList<>());
         listViewRecentFood = view.findViewById(R.id.list_view_recent_food);
+        btnScanBarcode = view.findViewById(R.id.btn_scan_barcode);
+
+        btnScanBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new BarcodeScannerFragment())
+                        .commit();
+            }
+        });
     }
-
-
-    // TODO: GET Current sizedProducts in the corresponding meal, and
-    public void addSizedProductToMeal(DirectSizedProductResponse sizedProduct) { viewModel.addRequest(new SizedProductRequest(sizedProduct.getServingSize(), sizedProduct.getProduct().getProductID())); }
 
     public void getRecentFoods(List<DirectPlanProgressResponse> planProgresses) {
         for(DirectPlanProgressResponse planProgress : planProgresses) {
             for(StaticProgressMealResponse meal : planProgress.getProgressMeals()) {
                 for(DirectSizedProductResponse product : meal.getSizedProducts()) {
-                    product.getProduct().getProductName();
                     if(sizedProducts.isEmpty() || !sizedProducts.stream().anyMatch(o -> product.getProduct().getProductName().equals(o.getProduct().getProductName()))) {
                         sizedProducts.add(product);
                     }
@@ -115,19 +133,20 @@ public class AllFoodFragment extends Fragment {
         private List<DirectSizedProductResponse> products;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView title, description;
+            public TextView title, description, addBtn;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 title = itemView.findViewById(R.id.text_item_title);
                 description = itemView.findViewById(R.id.text_item_description);
-                itemView.setOnClickListener(new View.OnClickListener() {
+                addBtn = itemView.findViewById(R.id.btn_add_recent_food);
+                addBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION) {
                             DirectSizedProductResponse sizedProduct = products.get(position);
-                            addSizedProductToMeal(sizedProduct);
+                            viewModel.addRequest(new SizedProductRequest(sizedProduct.getServingSize(), sizedProduct.getProduct().getProductID()));
                         }
                     }
                 });

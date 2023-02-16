@@ -61,7 +61,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        userPlanID = getArguments().getInt("userPlanID", 0);
+        if(getArguments() != null) {
+            userPlanID = getArguments().getInt("userPlanID", 0);
+        }
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.nicklastest;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -24,20 +26,24 @@ public class UserPlanSharedViewModel extends ViewModel {
 
     private List<SizedProductRequest> requestsList = new ArrayList<>();
 
-    public void setSelected(DirectUserPlanResponse userPlan) {
-        selected.setValue(userPlan);
-    }
-
-    public void addRequest(SizedProductRequest request) {
-        requestsList.add(request);
-        requests.setValue(requestsList);
-    }
-
     public LiveData<DirectUserPlanResponse> getSelected() {
         return selected;
     }
 
-    public LiveData<List<SizedProductRequest>> getRequests() {return requests; }
+    public LiveData<List<SizedProductRequest>> getRequests() { return requests; }
+
+    public void setSelected(DirectUserPlanResponse userPlan) {
+        selected.setValue(userPlan);
+    }
+
+    public void setRequests(List<SizedProductRequest> requests) {
+        requestsList = requests;
+        this.requests.setValue(requestsList);}
+
+    public void addRequest(SizedProductRequest request) {
+        requestsList.add(request);
+    }
+
 
     public StaticProgressMealResponse getProgressMeal(int planProgressID, int mealTimeID) {
         return selected.getValue()
@@ -58,29 +64,25 @@ public class UserPlanSharedViewModel extends ViewModel {
     }
 
     public Integer getSumOfCalories(List<DirectSizedProductResponse> sizedProducts) {
-        double totalCalories = 0;
+        Integer totalCalories = 0;
         for(DirectSizedProductResponse sizedProduct : sizedProducts) {
-            StaticProductResponse product = sizedProduct.getProduct();
-            totalCalories += product.getFatAmount() * 9;
-            totalCalories += (product.getCarbohydrateAmount() + product.getProteinAmount()) * 4;
+            totalCalories += getCaloriesOfItem(sizedProduct);
         }
-        return (int)Math.round(totalCalories);
+        return totalCalories;
     }
 
+    /**
+     * Returns a DirectPlanProgressResponse corresponding to the current date
+     * @return DirectPlanProgressResponse
+     */
     public DirectPlanProgressResponse getCurrentPlanProgress() {
         Calendar cldr = Calendar.getInstance();
         int day = cldr.get(Calendar.DAY_OF_MONTH);
         int month = cldr.get(Calendar.MONTH) + 1;
         int year = cldr.get(Calendar.YEAR);
 
-        for(DirectPlanProgressResponse planProgress : selected.getValue().getPlanProgress()) {
-            String planProgressDate = getStartDate(planProgress.getProgressDate().replace("T", " "));
-            String calendarDay = String.format("%s/%s/%s", day, month, year);
-            if(calendarDay.equals(planProgressDate)) {
-                return planProgress;
-            }
-        }
-        return null;
+        String calendarDay = String.format("%s/%s/%s", day, month, year);
+        return getPlanProgress(calendarDay);
     }
 
     public DirectPlanProgressResponse getPlanProgress(String currentPlanProgressDate) {

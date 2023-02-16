@@ -6,25 +6,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ProgressMealRequest {
-    @SerializedName("mealTimeID")
-    @Expose
-    public Integer mealTimeID;
+public class ProgressMealPatchRequest {
     @SerializedName("sizedProducts")
     @Expose
-    public List<SizedProductRequest> sizedProducts;
+    private List<SizedProductRequest> sizedProducts;
 
-    public ProgressMealRequest(Integer mealTimeID, List<SizedProductRequest> sizedProducts) {
-        this.mealTimeID = mealTimeID;
+    public ProgressMealPatchRequest(List<SizedProductRequest> sizedProducts) {
         this.sizedProducts = sizedProducts;
-    }
-
-    public Integer getMealTimeID() {
-        return mealTimeID;
-    }
-
-    public void setMealTimeID(Integer mealTimeID) {
-        this.mealTimeID = mealTimeID;
     }
 
     public List<SizedProductRequest> getSizedProducts() {

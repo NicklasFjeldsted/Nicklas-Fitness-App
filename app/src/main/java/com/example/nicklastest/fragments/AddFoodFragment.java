@@ -3,6 +3,7 @@ package com.example.nicklastest.fragments;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -22,12 +23,17 @@ import android.widget.TextView;
 import com.example.nicklastest.R;
 import com.example.nicklastest.UserPlanSharedViewModel;
 import com.example.nicklastest.models.ProgressMeal.DirectProgressMealResponse;
+import com.example.nicklastest.models.ProgressMeal.ProgressMealPatchRequest;
 import com.example.nicklastest.models.ProgressMeal.ProgressMealRequest;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
+import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
+import com.example.nicklastest.models.SizedProduct.SizedProductRequest;
 import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
 import com.example.nicklastest.services.ProgressMealService;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.observers.DisposableObserver;
@@ -56,10 +62,8 @@ public class AddFoodFragment extends Fragment {
     private PagerAdapter pagerAdapter;
     private String[] titles = new String[] { "All", "My Meals", "My Recipes" };
     private String[] mealTimes = new String[] { "Breakfast", "Lunch", "Dinner", "Snacks" };
-    private ListView listView;
+    private List<SizedProductRequest> productRequests;
     private UserPlanSharedViewModel viewModel;
-
-
 
     // GETS CURRENT PLANPROGRESS AND THE MEALTIME ID
     public static AddFoodFragment newInstance(int planProgressID, int mealTimeID) {
@@ -83,10 +87,21 @@ public class AddFoodFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add_food, container, false);
+        viewModel.getRequests().observe(getViewLifecycleOwner(), requests -> {
+            Log.d("productRequests", "productRequests has been assigned");
+            productRequests = requests;
+
+            Log.d("request size", String.valueOf(productRequests.size()));
+        });
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         View addFoodTopLayout = view.findViewById(R.id.layout_add_food_top);
         mealTimeText = view.findViewById(R.id.text_meal_title);
         goBackBtn = addFoodTopLayout.findViewById(R.id.btn_go_back);
@@ -99,49 +114,52 @@ public class AddFoodFragment extends Fragment {
         // Sets title text
         mealTimeText.setText(mealTimes[mealTimeID - 1]);
 
+
         // Goes back to DiaryFragment
         goBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.getRequests().observe(getViewLifecycleOwner(), requests -> {
-                    if(requests.size() != 0) {
-                        StaticProgressMealResponse meal = viewModel.getProgressMeal(planProgressID, mealTimeID);
+                Log.d("CLICKED", "YOU HAVE CLICKED THE GO BACK BUTTON");
+                if(productRequests.size() != 0) {
+                    Log.d("AddFoodFragment", "Calling http://10.0.2.2:5000/api/ProgressMeal");
+                    StaticProgressMealResponse meal = viewModel.getProgressMeal(planProgressID, mealTimeID);
 
-                        ProgressMealRequest request = new ProgressMealRequest(meal.getMealTimeID(), requests);
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://10.0.2.2:5000/api/ProgressMeal/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                                .build();
+                    ProgressMealPatchRequest request = new ProgressMealPatchRequest(productRequests);
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl("http://10.0.2.2:5000/api/ProgressMeal/")
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                            .build();
 
-                        ProgressMealService service = retrofit.create(ProgressMealService.class); // Create service
+                    ProgressMealService service = retrofit.create(ProgressMealService.class); // Create service
 
-                        service.Update(meal.getProgressMealID(), request) // Make call
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new DisposableObserver<DirectProgressMealResponse>() {
-                                    @Override
-                                    public void onNext(DirectProgressMealResponse response) {
-                                        Log.d("Success", "Successfully fetched data...");
-                                        viewModel.updateMealProgress(response);
-                                    }
+                    service.PatchUpdate(meal.getProgressMealID(), request) // Make call
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new DisposableObserver<DirectProgressMealResponse>() {
+                                @Override
+                                public void onNext(DirectProgressMealResponse response) {
+                                    Log.d("updateMeal", "Updating meal response");
+                                    viewModel.updateMealProgress(response);
+                                }
 
-                                    @Override
-                                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                                        Log.wtf("Error", "There was a an error...");
-                                        e.printStackTrace();
-                                    }
+                                @Override
+                                public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                                    Log.wtf("Error", "There was a an error...");
+                                    e.printStackTrace();
+                                }
 
-                                    @Override
-                                    public void onComplete() {
-                                        Log.d("Completed", "Completed the subscription successfully.");
-                                        dispose();
-                                    }
-                                });
-                    }
-                });
-                DiaryFragment diaryFragment = new DiaryFragment();
-                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, diaryFragment).commit();
+                                @Override
+                                public void onComplete() {
+                                    Log.d("Completed", "Completed the subscription successfully.");
+                                    requireActivity().getSupportFragmentManager().popBackStackImmediate("DiaryFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                                    dispose();
+                                }
+                            });
+                } else {
+                    Log.d("popBack", "CALLING popBackStackImmediate");
+                    requireActivity().getSupportFragmentManager().popBackStackImmediate("DiaryFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
             }
         });
 
@@ -158,7 +176,6 @@ public class AddFoodFragment extends Fragment {
                 return false;
             }
         });
-        return view;
     }
 
     public void setupViewPager() {

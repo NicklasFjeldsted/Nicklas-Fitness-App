@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, homeFragment).commit(); // Home Fragment
                     return true;
                 case R.id.diary:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, diaryFragment).commit(); // Diary Fragment
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, diaryFragment).addToBackStack(null).commit(); // Diary Fragment
                     return true;
                 case R.id.nutrition:
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, nutritionFragment).commit(); // Nutrition Fragment

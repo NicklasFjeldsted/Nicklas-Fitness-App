@@ -9,31 +9,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.nicklastest.R;
 import com.example.nicklastest.UserPlanSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
-import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
+import com.example.nicklastest.models.PlanProgress.PlanProgressRequest;
+import com.example.nicklastest.models.ProgressMeal.ProgressMealRequest;
 import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
-import com.example.nicklastest.models.SizedProduct.SizedProductDisplay;
-import com.example.nicklastest.models.User.DirectUserResponse;
 import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
-import com.example.nicklastest.services.UserPlanService;
-import com.example.nicklastest.services.UserService;
+import com.example.nicklastest.services.PlanProgressService;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.observers.DisposableObserver;
@@ -44,26 +39,35 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class DiaryFragment extends Fragment implements View.OnClickListener {
-    private UserPlanSharedViewModel viewModel;
     private final String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-    private DatePickerDialog picker;
+
+    private UserPlanSharedViewModel viewModel;
     private TextView goalText, foodText, exerciseText, remainingText, breakfastCalText, lunchCalText, dinnerCalText, snacksCalText;
     private View diaryDailyIntake;
     private Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
     private RecyclerView recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks;
     private Calendar cldr;
-    private int currentDay, currentMonth, day, month, year, goalVal, exerciseVal, remainingVal;
-    private DiaryRecyclerAdapter adapter;
-    private DirectUserPlanResponse userPlan;
-    private DirectPlanProgressResponse currentPlanProgress;
     private RecyclerView[] recViews;
     private TextView[] textViewMeals;
-    private boolean initialSetter = true;
+
+    private DisposableObserver<DirectPlanProgressResponse> disposable;
+
+    private String currentDateString;
+    private int currentDay, currentMonth, day, month, year, goalVal, exerciseVal, remainingVal;
+
+    private DiaryRecyclerAdapter adapter;
+
+    private DirectUserPlanResponse userPlan;
+    private DirectPlanProgressResponse currentPlanProgress;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+        if(savedInstanceState != null) { // if is a saved instance
+            currentDateString = savedInstanceState.getString("currentDateString");
+        }
     }
 
     @Override
@@ -71,11 +75,9 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
        View view =  inflater.inflate(R.layout.fragment_diary, container, false);
 
         viewModel.getSelected().observe(getViewLifecycleOwner(), item -> {
-            // Update the UI with the selected item'
-            Log.d("OnCreateView", "UserPlan has been assigned to Item!");
             userPlan = item;
             goalVal = 2800;
-            setAdapter();
+            applyDate();
         });
 
         return view;
@@ -90,6 +92,12 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("currentDateString", currentDateString);
+    }
+
+    @Override
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.calender_back_btn:{
@@ -98,13 +106,13 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
 
             case R.id.calender_datePicker_btn:{
-                picker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog picker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int newYear, int newMonth, int newDay) {
                         cldr.set(newYear, newMonth, newDay);
                         applyDate();
                     }
-                }, year, month, day);
+                }, year, month , day);
                 picker.show();
                 break;
             }
@@ -136,22 +144,28 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void setAdapter() {
+    private void setAdapter() {
         if(userPlan.getUserPlanID() != 0) {
-            goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d{1})(?=\\d)", ","));
-            String currentPlanProgressDate = String.format("%s/%s/%s", day, currentMonth == month ? month : month + 1, year);
-            currentPlanProgress = viewModel.getPlanProgress(currentPlanProgressDate);
 
-            Log.d("DoesDateExist", currentPlanProgress != null ? "TRUE" : "FALSE");
-            if(currentPlanProgress != null) {
-                exerciseVal = 100;
+            exerciseVal = 0;
+
+            goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d)(?=\\d)", ","));
+
+            String currentDate = String.format("%s/%s/%s", day, month + 1, year); // Current date as string
+
+            DirectPlanProgressResponse planProgress = viewModel.getPlanProgress(currentDate); // Gets PlanProgress based of its date
+
+            if(planProgress != null) {
+                currentPlanProgress = planProgress;
                 int totalCalories = 0;
                 for (int i = 0; i < 4; i++) {
-                    Log.d("SetAdapter", "Products are being assigned!");
-                    List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts();
-                    int sumOfCalories = viewModel.getSumOfCalories(products);
-                    textViewMeals[i].setText(String.format("%s", sumOfCalories));
-                    totalCalories += sumOfCalories;
+                    List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts(); // gets products from indexed ProgressMeal
+                    if(products.size() != 0) {
+                        int sumOfCalories = viewModel.getSumOfCalories(products); // sum of calories of products
+                        textViewMeals[i].setText(String.valueOf(viewModel.getSumOfCalories(products))); // sets text
+                        totalCalories += sumOfCalories;
+                    }
+
                     adapter = new DiaryRecyclerAdapter(products);
                     recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
                     recViews[i].setAdapter(adapter);
@@ -164,23 +178,32 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void setDiaryDailyIntake(int totalCal) {
-        exerciseText.setText(String.valueOf(exerciseVal));
+    private void setDiaryDailyIntake(int totalCal) {
+        exerciseText.setText(String.valueOf(exerciseVal)); // set text
+
         if(totalCal != 0) { // If data has been provided
             foodText.setText(String.valueOf(totalCal));
             remainingVal = goalVal - totalCal + exerciseVal;
             remainingText.setText(String.valueOf(remainingVal));
             return;
         }
-        foodText.setText("0");
+        // If data not provided
+        foodText.setText("0"); // set text
+
+        for (int i = 0; i < 4; i++) {
+            textViewMeals[i].setText("0"); // sets text
+            adapter = new DiaryRecyclerAdapter(new ArrayList<>());
+            recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
+            recViews[i].setAdapter(adapter);
+        }
         remainingText.setText(String.valueOf(goalVal + exerciseVal));
     }
 
-    public void SetDate(boolean increment) {
+    private void SetDate(boolean increment) {
         if(increment) {
-            if(day == cldr.getActualMaximum(Calendar.DATE)) { // if it's the last day of the month
+            if(day == cldr.getActualMaximum(Calendar.DAY_OF_MONTH)) { // if it's the last day of the month
                 if(month == Calendar.DECEMBER) { // if it's the last month of the year
-                    cldr.add(Calendar.MONTH, Calendar.JANUARY); // make it january
+                    cldr.set(Calendar.MONTH, Calendar.JANUARY); // make it january
                     cldr.add(Calendar.YEAR, + 1); // increment year
                 }
                 else {
@@ -194,11 +217,11 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         }
         else {
             if(day == 1) { // if last day of month
-                if(month == 1) { // if last month of year
-                    cldr.add(Calendar.MONTH, Calendar.DECEMBER); // make it december
+                if(month == Calendar.JANUARY) { // if last month of year
+                    cldr.set(Calendar.MONTH, Calendar.DECEMBER); // make it december
                     cldr.add(Calendar.YEAR, - 1); // decrement year
                 } else {
-                    cldr.add(Calendar.MONTH, - 1); // decrement year
+                    cldr.add(Calendar.MONTH, - 1); // decrement month
                 }
                 cldr.set(Calendar.DAY_OF_MONTH, cldr.getActualMaximum((Calendar.DAY_OF_MONTH))); // assign last day of year
 
@@ -209,32 +232,112 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         applyDate();
     }
 
-    public void applyDate() {
+    private void applyDate() {
         day = cldr.get(Calendar.DAY_OF_MONTH);
         month = cldr.get(Calendar.MONTH);
         year = cldr.get(Calendar.YEAR);
 
         datePickerBtn.setText(String.format("%s, %s/%s/%s", days[cldr.get(Calendar.DAY_OF_WEEK) - 1], day, month + 1, year));
 
-        if(currentMonth == month + 1) { // if same month
+        if(currentMonth == month) { // if same month
             if(day == currentDay) {
-                datePickerBtn.setText("Today");
+                datePickerBtn.setText(getString(R.string.diary_today));
             } else if(day == currentDay + 1) {
-                datePickerBtn.setText("Tomorrow");
+                datePickerBtn.setText(getString(R.string.diary_tomorrow));
             } else if(day == currentDay - 1) {
-                datePickerBtn.setText("Yesterday");
+                datePickerBtn.setText(getString(R.string.diary_yesterday));
             }
         }
         setAdapter();
     }
 
-    public void assignVariables(View view) {
+    private void OpenAddFood(int mealTimeID) {
+        currentDateString = String.format("%s/%s/%s", year, month, day);
+
+        if(currentPlanProgress == null) {
+            List<ProgressMealRequest> meals = new ArrayList<>(); // new empty list
+
+            for(int i = 1; i < 5; i++) {
+                meals.add(new ProgressMealRequest(i, new ArrayList<>())); // add empty list
+            }
+
+            String planProgressDate = String.format("%s-%s-%sT00:00:00", year, month +1, day);
+
+            PlanProgressRequest request = new PlanProgressRequest(planProgressDate, meals, userPlan.getStartWeight(), userPlan.getUserPlanID());
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://10.0.2.2:5000/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                    .build();
+
+            PlanProgressService service = retrofit.create(PlanProgressService.class); // Create service
+
+            service.Create("http://10.0.2.2:5000/api/PlanProgress/", request) // Make call
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(disposable = new DisposableObserver<DirectPlanProgressResponse>() {
+                        @Override
+                        public void onNext(DirectPlanProgressResponse response) {
+                            Log.d("Success", "Successfully fetched DirectPlanProgressResponse");
+                            currentPlanProgress = response;
+                            List<DirectPlanProgressResponse> plans = userPlan.getPlanProgress();
+                            plans.add(response);
+                            userPlan.setPlanProgress(plans);
+                            viewModel.setSelected(userPlan);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.wtf("Error", "There was a an error...");
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d("Completed", "Completed the subscription successfully.");
+                            replaceFragment(mealTimeID);
+                        }
+                    });
+
+        } else {
+            replaceFragment(mealTimeID);
+        }
+    }
+
+    private void replaceFragment(int mealTimeID) {
+        if(disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+
+        AddFoodFragment fragment;
+        fragment = AddFoodFragment.newInstance(currentPlanProgress.getPlanProgressID(), mealTimeID);
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack("DiaryFragment")
+                .commit();
+    }
+
+    private void assignVariables(View view) {
         cldr = Calendar.getInstance();
+        currentDay = cldr.get(Calendar.DAY_OF_MONTH);
+        currentMonth = cldr.get(Calendar.MONTH);
+
+        if(currentDateString != null) {
+            String[] substrings = currentDateString.split("/");
+            int[] date = new int[substrings.length];
+            for (int i = 0; i < substrings.length; i++) {
+                date[i] = Integer.parseInt(substrings[i]);
+            }
+            cldr.set(date[0], date[1], date[2]);
+        }
+
         day = cldr.get(Calendar.DAY_OF_MONTH);
-        month = cldr.get(Calendar.MONTH) + 1;
+        month = cldr.get(Calendar.MONTH);
         year = cldr.get(Calendar.YEAR);
-        currentDay = day;
-        currentMonth = month;
 
         diaryDailyIntake = view.findViewById(R.id.diary_daily_intake);
         datePickerBtn = diaryDailyIntake.findViewById(R.id.calender_datePicker_btn);
@@ -262,8 +365,6 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         recViewSnacks = view.findViewById(R.id.list_view_snacks);
         recViews = new RecyclerView[] { recViewBreakfast, recViewLunch, recViewDinner, recViewSnacks};
 
-        Log.d("ASSIGN VARIABLES", "VARIABLES HAVE BEEN ASSIGNED!!!");
-
         datePickerBtn.setOnClickListener(this);
         backDateBtn.setOnClickListener(this);
         forwardDateBtn.setOnClickListener(this);
@@ -273,21 +374,10 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         addFoodSnacks.setOnClickListener(this);
     }
 
-    public void OpenAddFood(int mealTimeID) {
+    public static class DiaryRecyclerAdapter extends RecyclerView.Adapter<DiaryRecyclerAdapter.ViewHolder>  {
+        private final List<DirectSizedProductResponse> products;
 
-        currentPlanProgress.getPlanProgressID();
-
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new AddFoodFragment().newInstance(currentPlanProgress.getPlanProgressID(), mealTimeID))
-                .addToBackStack(null)
-                .commit();
-    }
-
-    public class DiaryRecyclerAdapter extends RecyclerView.Adapter<DiaryRecyclerAdapter.ViewHolder>  {
-        private List<DirectSizedProductResponse> products;
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public static class ViewHolder extends RecyclerView.ViewHolder {
             public TextView title, description, calCount;
 
             public ViewHolder(View itemView) {

@@ -83,6 +83,10 @@ public class DirectUserPlanResponse {
         return planProgress;
     }
 
+    public void setPlanProgress(List<DirectPlanProgressResponse> planProgress) {
+        this.planProgress = planProgress;
+    }
+
     public Integer getActivityLevelID() {
         return activityLevelID;
     }

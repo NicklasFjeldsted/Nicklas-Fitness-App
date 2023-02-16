@@ -18,6 +18,7 @@
 
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_scan_barcode"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="9"
