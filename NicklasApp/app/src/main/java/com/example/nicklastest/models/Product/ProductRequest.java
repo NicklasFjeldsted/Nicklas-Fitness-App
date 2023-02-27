@@ -1,20 +1,22 @@
 package com.example.nicklastest.models.Product;
 
 public class ProductRequest {
-    private String ProductName;
     private String ProductCode;
-    private double EnergyAmount;
-    private double FatAmount;
-    private double SaturatedFatAmount;
-    private double CarbohydrateAmount;
-    private double SugarAmount;
-    private double FiberAmount;
-    private double ProteinAmount;
-    private double SaltAmount;
+    private String ProductName;
+    private String ProductManufacturer;
+    private Double EnergyAmount;
+    private Double FatAmount;
+    private Double SaturatedFatAmount;
+    private Double CarbohydrateAmount;
+    private Double SugarAmount;
+    private Double FiberAmount;
+    private Double ProteinAmount;
+    private Double SaltAmount;
 
-    public ProductRequest(String productName, String productCode, double energyAmount, double fatAmount, double saturatedFatAmount, double carbohydrateAmount, double sugarAmount, double fiberAmount, double proteinAmount, double saltAmount) {
-        ProductName = productName;
+    public ProductRequest(String productCode, String productName, String productManufacturer, Double energyAmount, Double fatAmount, Double saturatedFatAmount, Double carbohydrateAmount, Double sugarAmount, Double fiberAmount, Double proteinAmount, Double saltAmount) {
         ProductCode = productCode;
+        ProductName = productName;
+        ProductManufacturer = productManufacturer;
         EnergyAmount = energyAmount;
         FatAmount = fatAmount;
         SaturatedFatAmount = saturatedFatAmount;
@@ -25,14 +27,6 @@ public class ProductRequest {
         SaltAmount = saltAmount;
     }
 
-    public String getProductName() {
-        return ProductName;
-    }
-
-    public void setProductName(String productName) {
-        ProductName = productName;
-    }
-
     public String getProductCode() {
         return ProductCode;
     }
@@ -41,67 +35,83 @@ public class ProductRequest {
         ProductCode = productCode;
     }
 
-    public double getEnergyAmount() {
+    public String getProductName() {
+        return ProductName;
+    }
+
+    public void setProductName(String productName) {
+        ProductName = productName;
+    }
+
+    public String getProductManufacturer() {
+        return ProductManufacturer;
+    }
+
+    public void setProductManufacturer(String productManufacturer) {
+        ProductManufacturer = productManufacturer;
+    }
+
+    public Double getEnergyAmount() {
         return EnergyAmount;
     }
 
-    public void setEnergyAmount(double energyAmount) {
+    public void setEnergyAmount(Double energyAmount) {
         EnergyAmount = energyAmount;
     }
 
-    public double getFatAmount() {
+    public Double getFatAmount() {
         return FatAmount;
     }
 
-    public void setFatAmount(double fatAmount) {
+    public void setFatAmount(Double fatAmount) {
         FatAmount = fatAmount;
     }
 
-    public double getSaturatedFatAmount() {
+    public Double getSaturatedFatAmount() {
         return SaturatedFatAmount;
     }
 
-    public void setSaturatedFatAmount(double saturatedFatAmount) {
+    public void setSaturatedFatAmount(Double saturatedFatAmount) {
         SaturatedFatAmount = saturatedFatAmount;
     }
 
-    public double getCarbohydrateAmount() {
+    public Double getCarbohydrateAmount() {
         return CarbohydrateAmount;
     }
 
-    public void setCarbohydrateAmount(double carbohydrateAmount) {
+    public void setCarbohydrateAmount(Double carbohydrateAmount) {
         CarbohydrateAmount = carbohydrateAmount;
     }
 
-    public double getSugarAmount() {
+    public Double getSugarAmount() {
         return SugarAmount;
     }
 
-    public void setSugarAmount(double sugarAmount) {
+    public void setSugarAmount(Double sugarAmount) {
         SugarAmount = sugarAmount;
     }
 
-    public double getFiberAmount() {
+    public Double getFiberAmount() {
         return FiberAmount;
     }
 
-    public void setFiberAmount(double fiberAmount) {
+    public void setFiberAmount(Double fiberAmount) {
         FiberAmount = fiberAmount;
     }
 
-    public double getProteinAmount() {
+    public Double getProteinAmount() {
         return ProteinAmount;
     }
 
-    public void setProteinAmount(double proteinAmount) {
+    public void setProteinAmount(Double proteinAmount) {
         ProteinAmount = proteinAmount;
     }
 
-    public double getSaltAmount() {
+    public Double getSaltAmount() {
         return SaltAmount;
     }
 
-    public void setSaltAmount(double saltAmount) {
+    public void setSaltAmount(Double saltAmount) {
         SaltAmount = saltAmount;
     }
 }

@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,29 +16,19 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserPlanSharedViewModel;
+import com.example.nicklastest.UserSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
-import com.example.nicklastest.models.ProgressMeal.ProgressMealRequest;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
 import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
 import com.example.nicklastest.models.SizedProduct.SizedProductRequest;
 import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
-import com.example.nicklastest.services.ProgressMealService;
-import com.example.nicklastest.services.UserPlanService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.observers.DisposableObserver;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 public class AllFoodFragment extends Fragment {
 
-    private UserPlanSharedViewModel viewModel;
+    private UserSharedViewModel viewModel;
     private Button btnScanBarcode;
     private RecyclerView listViewRecentFood;
     private AllFoodRecyclerAdapter adapter;
@@ -66,7 +55,7 @@ public class AllFoodFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         planProgressID = getArguments().getInt("planProgressID", 0);
         mealTimeID = getArguments().getInt("mealTimeID", 0);
     }
@@ -90,7 +79,7 @@ public class AllFoodFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.setProductRequests();
+        viewModel.setRequests();
         listViewRecentFood = view.findViewById(R.id.list_view_recent_food);
         btnScanBarcode = view.findViewById(R.id.btn_scan_barcode);
 

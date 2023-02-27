@@ -17,18 +17,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserPlanSharedViewModel;
+import com.example.nicklastest.UserSharedViewModel;
 import com.example.nicklastest.models.ProgressMeal.DirectProgressMealResponse;
 import com.example.nicklastest.models.ProgressMeal.ProgressMealPatchRequest;
-import com.example.nicklastest.models.ProgressMeal.ProgressMealRequest;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
-import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
 import com.example.nicklastest.models.SizedProduct.SizedProductRequest;
-import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
 import com.example.nicklastest.services.ProgressMealService;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -63,7 +59,7 @@ public class AddFoodFragment extends Fragment {
     private String[] titles = new String[] { "All", "My Meals", "My Recipes" };
     private String[] mealTimes = new String[] { "Breakfast", "Lunch", "Dinner", "Snacks" };
     private List<SizedProductRequest> productRequests;
-    private UserPlanSharedViewModel viewModel;
+    private UserSharedViewModel viewModel;
 
     // GETS CURRENT PLANPROGRESS AND THE MEALTIME ID
     public static AddFoodFragment newInstance(int planProgressID, int mealTimeID) {
@@ -78,7 +74,7 @@ public class AddFoodFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         if (getArguments() != null) {
             planProgressID = getArguments().getInt(ARG_PARAM1);
             mealTimeID = getArguments().getInt(ARG_PARAM2);

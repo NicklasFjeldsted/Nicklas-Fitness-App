@@ -18,21 +18,32 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserPlanSharedViewModel;
+import com.example.nicklastest.UserSharedViewModel;
+import com.example.nicklastest.models.OpenFoodData.DirectOpenProductResponse;
+import com.example.nicklastest.models.OpenFoodData.Nutriments;
+import com.example.nicklastest.models.OpenFoodData.Product;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
 import com.example.nicklastest.models.PlanProgress.PlanProgressRequest;
+import com.example.nicklastest.models.Product.ProductRequest;
+import com.example.nicklastest.models.Product.StaticProductResponse;
 import com.example.nicklastest.models.ProgressMeal.ProgressMealRequest;
 import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
 import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
+import com.example.nicklastest.services.OpenFoodService;
 import com.example.nicklastest.services.PlanProgressService;
+import com.example.nicklastest.services.ProductService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import reactor.core.publisher.Mono;
+import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -41,7 +52,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DiaryFragment extends Fragment implements View.OnClickListener {
     private final String[] days = new String[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-    private UserPlanSharedViewModel viewModel;
+    private UserSharedViewModel viewModel;
     private TextView goalText, foodText, exerciseText, remainingText, breakfastCalText, lunchCalText, dinnerCalText, snacksCalText;
     private View diaryDailyIntake;
     private Button datePickerBtn, backDateBtn, forwardDateBtn, addFoodBreakfast, addFoodLunch, addFoodDinner, addFoodSnacks;
@@ -64,7 +75,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         if(savedInstanceState != null) { // if is a saved instance
             currentDateString = savedInstanceState.getString("currentDateString");
         }
@@ -89,6 +100,84 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
 
         // ASSIGNING ELEMENTS
         assignVariables(view);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:5000/api/Product/")
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ProductService productService = retrofit.create(ProductService.class);
+
+        String url = "7032069719657";
+        productService.GetById(url)
+                .subscribeOn(Schedulers.io()) // run on IO thread
+                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
+                .doOnNext(product -> {
+                    Log.d("product", product.getProductName());
+                })
+                .doOnError(error -> {
+                    if(error instanceof HttpException && ((HttpException) error).code() == 404) {
+                        Log.d("Error", "Product does not exist!");
+                        handleProductNotFoundError(productService, url, error);
+                    }
+                    Log.d("HELO", "ASDASD");
+                });
+    }
+
+    private void handleProductNotFoundError(ProductService productService, String url, Throwable error) {
+        if (error instanceof HttpException && ((HttpException) error).code() == 404) {
+            handleProductNotFound(productService, "https://world.openfoodfacts.org/api/v0/product/" +  url);
+        } else {
+            Log.e("Error", "Error fetching product: " + error.getMessage());
+            error.printStackTrace();
+        }
+    }
+
+    private void handleProductNotFound(ProductService productService, String url) {
+        Log.d("Error", "Product does not exist!");
+        productService.GetOpenFood(url)
+                .subscribeOn(Schedulers.io()) // run on IO thread
+                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
+                .flatMap(product -> {
+                    return createProduct(productService, product);
+                })
+                .doOnNext(newProduct -> {
+                    Log.d("newProduct", "new product has been created");
+                })
+                .doOnError(error -> {
+                    Log.e("Error", "Error creating new product: " + error.getMessage());
+                    error.printStackTrace();
+                })
+                .subscribe();
+    }
+
+    private Observable<StaticProductResponse> createProduct(ProductService productService, DirectOpenProductResponse product) {
+
+        Product productInstance = product.getProduct();
+        Nutriments nutrimentsInstance = productInstance.getNutriments();
+
+        ProductRequest request = new ProductRequest(
+                product.getCode(),
+                productInstance.getGenericName(),
+                productInstance.getBrandOwner(),
+                nutrimentsInstance.getEnergy100g().doubleValue(),
+                nutrimentsInstance.getFat100g(),
+                nutrimentsInstance.getSaturatedFat100g(),
+                nutrimentsInstance.getCarbohydrates100g(),
+                nutrimentsInstance.getSugars100g(),
+                nutrimentsInstance.getFiber100g(),
+                nutrimentsInstance.getProteins100g(),
+                nutrimentsInstance.getSalt100g()
+        );
+
+        return productService.Create(request)
+                .cast(StaticProductResponse.class)
+                .onErrorResumeNext(error -> {
+                    Log.e("Error", "Error creating product: " + error.getMessage());
+                    error.printStackTrace();
+                    return Observable.empty();
+                });
     }
 
     @Override
@@ -145,37 +234,33 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setAdapter() {
-        if(userPlan.getUserPlanID() != 0) {
+        exerciseVal = 0;
+        goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d)(?=\\d)", ","));
 
-            exerciseVal = 0;
+        String currentDate = String.format("%s/%s/%s", day, month + 1, year); // Current date as string
 
-            goalText.setText(String.valueOf(goalVal).replaceAll("(?<=^\\d)(?=\\d)", ","));
+        DirectPlanProgressResponse planProgress = viewModel.getPlanProgress(currentDate); // Gets PlanProgress based of its date
 
-            String currentDate = String.format("%s/%s/%s", day, month + 1, year); // Current date as string
-
-            DirectPlanProgressResponse planProgress = viewModel.getPlanProgress(currentDate); // Gets PlanProgress based of its date
-
-            if(planProgress != null) {
-                currentPlanProgress = planProgress;
-                int totalCalories = 0;
-                for (int i = 0; i < 4; i++) {
-                    List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts(); // gets products from indexed ProgressMeal
-                    if(products.size() != 0) {
-                        int sumOfCalories = viewModel.getSumOfCalories(products); // sum of calories of products
-                        textViewMeals[i].setText(String.valueOf(viewModel.getSumOfCalories(products))); // sets text
-                        totalCalories += sumOfCalories;
-                    }
-
-                    adapter = new DiaryRecyclerAdapter(products, viewModel);
-                    recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
-                    recViews[i].setAdapter(adapter);
+        if(planProgress != null) {
+            currentPlanProgress = planProgress;
+            int totalCalories = 0;
+            for (int i = 0; i < 4; i++) {
+                List<DirectSizedProductResponse> products = currentPlanProgress.getProgressMeals().get(i).getSizedProducts(); // gets products from indexed ProgressMeal
+                if(products.size() != 0) {
+                    int sumOfCalories = viewModel.getSumOfCalories(products); // sum of calories of products
+                    textViewMeals[i].setText(String.valueOf(viewModel.getSumOfCalories(products))); // sets text
+                    totalCalories += sumOfCalories;
                 }
-                setDiaryDailyIntake(totalCalories);
-                return;
 
+                adapter = new DiaryRecyclerAdapter(products, viewModel);
+                recViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
+                recViews[i].setAdapter(adapter);
             }
-            setDiaryDailyIntake(0);
+            setDiaryDailyIntake(totalCalories);
+            return;
+
         }
+        setDiaryDailyIntake(0);
     }
 
     private void setDiaryDailyIntake(int totalCal) {
@@ -261,7 +346,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                 meals.add(new ProgressMealRequest(i, new ArrayList<>())); // add empty list
             }
 
-            String planProgressDate = String.format("%s-%s-%sT00:00:00", year, month +1, day);
+            String planProgressDate = String.format("%s-%s-%sT00:00:00", year, month < 9 ? String.format("%02d", month + 1) : month +1, day);
 
             PlanProgressRequest request = new PlanProgressRequest(planProgressDate, meals, userPlan.getStartWeight(), userPlan.getUserPlanID());
 
@@ -376,7 +461,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
 
     public static class DiaryRecyclerAdapter extends RecyclerView.Adapter<DiaryRecyclerAdapter.ViewHolder>  {
         private final List<DirectSizedProductResponse> products;
-        private UserPlanSharedViewModel viewModel;
+        private final UserSharedViewModel viewModel;
 
         public static class ViewHolder extends RecyclerView.ViewHolder {
             public TextView title, description, calCount;
@@ -391,7 +476,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
             }
         }
 
-        public DiaryRecyclerAdapter(List<DirectSizedProductResponse> products, UserPlanSharedViewModel viewModel) {
+        public DiaryRecyclerAdapter(List<DirectSizedProductResponse> products, UserSharedViewModel viewModel) {
             this.products = products;
             this.viewModel = viewModel;
         }

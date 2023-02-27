@@ -1,5 +1,6 @@
 package com.example.nicklastest.services;
 
+import com.example.nicklastest.models.OpenFoodData.DirectOpenProductResponse;
 import com.example.nicklastest.models.Product.ProductRequest;
 import com.example.nicklastest.models.Product.StaticProductResponse;
 
@@ -12,6 +13,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Url;
 
 public interface ProductService {
     @GET()
@@ -19,6 +21,9 @@ public interface ProductService {
 
     @GET("{barCode}")
     Observable<StaticProductResponse> GetById(@Path("barCode") String barCode);
+
+    @GET
+    Observable<DirectOpenProductResponse> GetOpenFood(@Url String url);
 
     @POST()
     Observable<StaticProductResponse> Create(@Body ProductRequest request);
@@ -28,4 +33,6 @@ public interface ProductService {
 
     @DELETE("{barCode}")
     Observable<StaticProductResponse> Delete(@Path("barCode") String barCode);
+
+
 }

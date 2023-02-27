@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -25,15 +26,29 @@ import android.widget.Toast;
 
 import com.example.nicklastest.MainActivity;
 import com.example.nicklastest.R;
+import com.example.nicklastest.models.OpenFoodData.DirectOpenProductResponse;
+import com.example.nicklastest.models.Product.StaticProductResponse;
+import com.example.nicklastest.services.OpenFoodService;
+import com.example.nicklastest.services.ProductService;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.Manifest.permission.CAMERA;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.HttpException;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BarcodeScannerFragment extends Fragment {
 
@@ -96,8 +111,7 @@ public class BarcodeScannerFragment extends Fragment {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     try {
                         cameraSource.start(holder);
                     } catch (IOException e) {
@@ -114,6 +128,87 @@ public class BarcodeScannerFragment extends Fragment {
                 cameraSource.stop();
             }
         });
+    }
+
+    private void doesProductExist(String barCode) {
+
+        Retrofit retrofit1 = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:5000/api/Product/")
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Retrofit retrofit2 = new Retrofit.Builder()
+                .baseUrl("https://world.openfoodfacts.org/api/v0/product/")
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ProductService productService = retrofit1.create(ProductService.class);
+        OpenFoodService openFoodService = retrofit2.create(OpenFoodService.class);
+
+
+
+        Disposable disposable = productService.GetById(barCode)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<StaticProductResponse>() {
+                    @Override
+                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull StaticProductResponse staticProductResponse) {
+                        // TODO: Apply the fetched data in a new UI
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        if (e instanceof HttpException && ((HttpException) e).code() == 404) {
+                            Disposable disposable = openFoodService.GetByBarcode(barCode)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeWith(new DisposableObserver<DirectOpenProductResponse>() {
+                                        @Override
+                                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull DirectOpenProductResponse productResponse) {
+                                            // TODO: If it does exist create a new instance of the fetched data in own database
+                                            Disposable disposable = productService.Create(null)
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribeWith(new DisposableObserver<StaticProductResponse>() {
+                                                        @Override
+                                                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull StaticProductResponse staticProductResponse) {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+
+                                                        }
+
+                                                        @Override
+                                                        public void onComplete() {
+                                                            this.dispose();
+                                                        }
+                                                    });
+                                        }
+
+                                        @Override
+                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                                            // TODO: If it doesn't exist do something
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
+                        } else {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     @Override

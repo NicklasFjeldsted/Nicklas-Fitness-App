@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class UserPlanSharedViewModel extends ViewModel {
+public class UserSharedViewModel extends ViewModel {
     private final MutableLiveData<DirectUserResponse> userData = new MutableLiveData<>();
     private final MutableLiveData<DirectUserPlanResponse> userPlanData = new MutableLiveData<>();
     private final MutableLiveData<List<SizedProductRequest>> requestsData = new MutableLiveData<>();
@@ -41,7 +41,7 @@ public class UserPlanSharedViewModel extends ViewModel {
 
     public void setUserPlan(DirectUserPlanResponse userPlan) { userPlanData.postValue(userPlan);}
 
-    public void setProductRequests() { requestsData.postValue(requestsList); }
+    public void setRequests() { requestsData.postValue(requestsList); }
 
     public void addRequest(SizedProductRequest request) { requestsList.add(request); }
 
@@ -118,6 +118,8 @@ public class UserPlanSharedViewModel extends ViewModel {
     private String getStartDate(String startDate) {
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("dd/M/yyyy");
+
+        Log.d("LocalDate", LocalDate.parse(startDate, inputFormat).format(outputFormat));
 
         return LocalDate.parse(startDate, inputFormat).format(outputFormat);
     }

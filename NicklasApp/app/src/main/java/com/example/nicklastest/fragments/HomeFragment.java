@@ -1,7 +1,6 @@
 package com.example.nicklastest.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,32 +12,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.nicklastest.MainActivity;
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserPlanSharedViewModel;
-import com.example.nicklastest.models.MealTime.StaticMealTimeResponse;
+import com.example.nicklastest.UserSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
-import com.example.nicklastest.models.Product.StaticProductResponse;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
-import com.example.nicklastest.models.User.DirectUserResponse;
-import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
-import com.example.nicklastest.services.ProductService;
-import com.example.nicklastest.services.UserPlanService;
-import com.example.nicklastest.services.UserService;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.observers.DisposableObserver;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 public class HomeFragment extends Fragment {
-    private UserPlanSharedViewModel viewModel;
+    private UserSharedViewModel viewModel;
 
     private int baseGoalVal, currentCaloriesVal, burnedCaloriesVal, remainingCaloriesVal;
 
@@ -57,7 +38,7 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(UserPlanSharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
 
         viewModel.getUserPlan().observe(getViewLifecycleOwner(), item -> {
             // Update the UI with the selected item
@@ -82,7 +63,6 @@ public class HomeFragment extends Fragment {
         textBaseGoal.setText(String.valueOf(baseGoalVal));
         DirectPlanProgressResponse currentPlanProgress = viewModel.getCurrentPlanProgress();
         if(currentPlanProgress != null) {
-            burnedCaloriesVal = 100;
             for (StaticProgressMealResponse meal : currentPlanProgress.getProgressMeals()) {
                 currentCaloriesVal += viewModel.getSumOfCalories(meal.getSizedProducts());
             }
