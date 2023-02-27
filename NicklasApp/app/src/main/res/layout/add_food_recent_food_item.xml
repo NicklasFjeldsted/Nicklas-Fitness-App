@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="5dp"
+    android:background="@color/food_item_background">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Milk"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_item_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="161 kal., Arla, 350,0 gram"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add_recent_food"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/rounded_edge"
+        android:elevation="10dp"
+        android:insetLeft="5dp"
+        android:insetTop="6dp"
+        android:insetRight="5dp"
+        android:insetBottom="6dp"
+        android:padding="0dp"
+        app:backgroundTint="@color/track_grey"
+        app:icon="@drawable/ic_baseline_add_24"
+        app:iconSize="24dp"
+        app:iconTint="@color/text_blue"
+        tools:ignore="SpeakableTextPresentCheck" />
+</RelativeLayout>

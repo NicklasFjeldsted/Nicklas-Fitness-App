@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".fragments.AllFoodFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="19"
+        android:padding="20dp"
+        android:background="@color/add_recent_food_background"
+        android:orientation="horizontal">
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_scan_barcode"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:padding="20dp"
+            app:cornerRadius="5dp"
+            app:icon="@drawable/ic_barcode"
+            app:iconTint="@color/add_recent_food_button"
+            app:iconGravity="top"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/add_recent_food_button"
+            android:text="Scan a Barcode" />
+
+        <androidx.legacy.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:padding="20dp"
+            app:cornerRadius="5dp"
+            app:icon="@drawable/ic_food_add"
+            app:iconTint="@color/add_recent_food_button"
+            app:iconGravity="top"
+            android:textColor="@color/add_recent_food_button"
+            android:backgroundTint="@color/white"
+            android:text="Quick Add On" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:text="History"
+            android:textSize="18sp"
+            android:textColor="@color/black"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:padding="10dp"
+            android:text="Recent"
+            android:textAllCaps="false"
+            android:textSize="10sp"
+            android:textStyle="normal"
+            android:textColor="@color/black"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_baseline_sort_24"
+            app:iconTint="@color/flag_gray"
+            android:backgroundTint="@color/white"
+            app:iconGravity="start"
+            app:iconPadding="0dp"
+            app:iconSize="16dp" />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_view_recent_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:padding="10dp"/>
+</LinearLayout>
+
