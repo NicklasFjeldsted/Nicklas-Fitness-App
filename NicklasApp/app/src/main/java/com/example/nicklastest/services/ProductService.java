@@ -7,6 +7,7 @@ import com.example.nicklastest.models.Product.StaticProductResponse;
 import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -20,13 +21,13 @@ public interface ProductService {
     Observable<List<StaticProductResponse>> GetAll();
 
     @GET("{barCode}")
-    Observable<StaticProductResponse> GetById(@Path("barCode") String barCode);
+    Single<StaticProductResponse> GetById(@Path("barCode") String barCode);
 
-    @GET
-    Observable<DirectOpenProductResponse> GetOpenFood(@Url String url);
+    @GET()
+    Single<DirectOpenProductResponse> GetOpenFood(@Url String url);
 
-    @POST()
-    Observable<StaticProductResponse> Create(@Body ProductRequest request);
+    @POST
+    Single<StaticProductResponse> Create(@Url String url, @Body ProductRequest request);
 
     @PUT("{barCode}")
     Observable<StaticProductResponse> Update(@Path("barCode") String barCode, @Body ProductRequest request);

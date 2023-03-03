@@ -8,7 +8,7 @@ public class Product {
     @Expose
     private String code;
 
-    @SerializedName("brand_owner")
+    @SerializedName("brands")
     @Expose
     private String brandOwner;
 

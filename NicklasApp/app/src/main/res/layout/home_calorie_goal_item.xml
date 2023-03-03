@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/calorie_goal_card_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="5dp"
@@ -14,12 +15,6 @@
             android:layout_height="wrap_content"
             android:elevation="10dp"
             android:padding="20dp">
-
-            <Button
-                android:id="@+id/btn_calorie_goal_item"
-                android:layout_width="match_parent"
-                android:layout_height="211dp"
-                android:background="@android:color/transparent" />
 
             <TextView
                 android:id="@+id/title"

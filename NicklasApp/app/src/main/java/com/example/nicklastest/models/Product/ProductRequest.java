@@ -1,16 +1,41 @@
 package com.example.nicklastest.models.Product;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class ProductRequest {
-    private String ProductCode;
+    @SerializedName("productName")
+    @Expose
     private String ProductName;
+    @SerializedName("productManufacturer")
+    @Expose
     private String ProductManufacturer;
+    @SerializedName("productCode")
+    @Expose
+    private String ProductCode;
+    @SerializedName("energyAmount")
+    @Expose
     private Double EnergyAmount;
+    @SerializedName("fatAmount")
+    @Expose
     private Double FatAmount;
+    @SerializedName("saturatedFatAmount")
+    @Expose
     private Double SaturatedFatAmount;
+    @SerializedName("carbohydrateAmount")
+    @Expose
     private Double CarbohydrateAmount;
+    @SerializedName("sugarAmount")
+    @Expose
     private Double SugarAmount;
+    @SerializedName("fiberAmount")
+@   Expose
     private Double FiberAmount;
+    @SerializedName("proteinAmount")
+    @Expose
     private Double ProteinAmount;
+    @SerializedName("saltAmount")
+@   Expose
     private Double SaltAmount;
 
     public ProductRequest(String productCode, String productName, String productManufacturer, Double energyAmount, Double fatAmount, Double saturatedFatAmount, Double carbohydrateAmount, Double sugarAmount, Double fiberAmount, Double proteinAmount, Double saltAmount) {

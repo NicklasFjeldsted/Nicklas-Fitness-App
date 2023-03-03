@@ -32,7 +32,15 @@ import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
 import com.example.nicklastest.services.OpenFoodService;
 import com.example.nicklastest.services.PlanProgressService;
 import com.example.nicklastest.services.ProductService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -101,83 +109,20 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         // ASSIGNING ELEMENTS
         assignVariables(view);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/api/Product/")
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
-        ProductService productService = retrofit.create(ProductService.class);
-
-        String url = "7032069719657";
-        productService.GetById(url)
-                .subscribeOn(Schedulers.io()) // run on IO thread
-                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
-                .doOnNext(product -> {
-                    Log.d("product", product.getProductName());
-                })
-                .doOnError(error -> {
-                    if(error instanceof HttpException && ((HttpException) error).code() == 404) {
-                        Log.d("Error", "Product does not exist!");
-                        handleProductNotFoundError(productService, url, error);
-                    }
-                    Log.d("HELO", "ASDASD");
-                });
-    }
-
-    private void handleProductNotFoundError(ProductService productService, String url, Throwable error) {
-        if (error instanceof HttpException && ((HttpException) error).code() == 404) {
-            handleProductNotFound(productService, "https://world.openfoodfacts.org/api/v0/product/" +  url);
-        } else {
-            Log.e("Error", "Error fetching product: " + error.getMessage());
-            error.printStackTrace();
-        }
-    }
-
-    private void handleProductNotFound(ProductService productService, String url) {
-        Log.d("Error", "Product does not exist!");
-        productService.GetOpenFood(url)
-                .subscribeOn(Schedulers.io()) // run on IO thread
-                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
-                .flatMap(product -> {
-                    return createProduct(productService, product);
-                })
-                .doOnNext(newProduct -> {
-                    Log.d("newProduct", "new product has been created");
-                })
-                .doOnError(error -> {
-                    Log.e("Error", "Error creating new product: " + error.getMessage());
-                    error.printStackTrace();
-                })
-                .subscribe();
-    }
-
-    private Observable<StaticProductResponse> createProduct(ProductService productService, DirectOpenProductResponse product) {
-
-        Product productInstance = product.getProduct();
-        Nutriments nutrimentsInstance = productInstance.getNutriments();
-
-        ProductRequest request = new ProductRequest(
-                product.getCode(),
-                productInstance.getGenericName(),
-                productInstance.getBrandOwner(),
-                nutrimentsInstance.getEnergy100g().doubleValue(),
-                nutrimentsInstance.getFat100g(),
-                nutrimentsInstance.getSaturatedFat100g(),
-                nutrimentsInstance.getCarbohydrates100g(),
-                nutrimentsInstance.getSugars100g(),
-                nutrimentsInstance.getFiber100g(),
-                nutrimentsInstance.getProteins100g(),
-                nutrimentsInstance.getSalt100g()
-        );
-
-        return productService.Create(request)
-                .cast(StaticProductResponse.class)
-                .onErrorResumeNext(error -> {
-                    Log.e("Error", "Error creating product: " + error.getMessage());
-                    error.printStackTrace();
-                    return Observable.empty();
-                });
+        View remainingCalories = diaryDailyIntake.findViewById(R.id.diary_remaining_calories);
+        remainingCalories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentDateString = String.format("%s/%s/%s", year, month, day);
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new NutritionFragment(), "C")
+                        .addToBackStack("C")
+                        .commit();
+            }
+        });
     }
 
     @Override
@@ -337,8 +282,6 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
     }
 
     private void OpenAddFood(int mealTimeID) {
-        currentDateString = String.format("%s/%s/%s", year, month, day);
-
         if(currentPlanProgress == null) {
             List<ProgressMealRequest> meals = new ArrayList<>(); // new empty list
 
@@ -346,7 +289,7 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                 meals.add(new ProgressMealRequest(i, new ArrayList<>())); // add empty list
             }
 
-            String planProgressDate = String.format("%s-%s-%sT00:00:00", year, month < 9 ? String.format("%02d", month + 1) : month +1, day);
+            String planProgressDate = String.format("%s-%s-%sT00:00:00", year, month < 9 ? String.format("%02d", month + 1) : month +1, day < 10 ? String.format("%02d", day) : day);
 
             PlanProgressRequest request = new PlanProgressRequest(planProgressDate, meals, userPlan.getStartWeight(), userPlan.getUserPlanID());
 
@@ -357,6 +300,8 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
                     .build();
 
             PlanProgressService service = retrofit.create(PlanProgressService.class); // Create service
+
+            Log.d("request", request.getProgressDate());
 
             service.Create("http://10.0.2.2:5000/api/PlanProgress/", request) // Make call
                     .subscribeOn(Schedulers.io())
@@ -394,6 +339,8 @@ public class DiaryFragment extends Fragment implements View.OnClickListener {
         if(disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+
+        currentDateString = String.format("%s/%s/%s", year, month, day);
 
         AddFoodFragment fragment;
         fragment = AddFoodFragment.newInstance(currentPlanProgress.getPlanProgressID(), mealTimeID);

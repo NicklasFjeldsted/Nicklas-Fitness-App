@@ -27,6 +27,9 @@ import android.widget.Toast;
 import com.example.nicklastest.MainActivity;
 import com.example.nicklastest.R;
 import com.example.nicklastest.models.OpenFoodData.DirectOpenProductResponse;
+import com.example.nicklastest.models.OpenFoodData.Nutriments;
+import com.example.nicklastest.models.OpenFoodData.Product;
+import com.example.nicklastest.models.Product.ProductRequest;
 import com.example.nicklastest.models.Product.StaticProductResponse;
 import com.example.nicklastest.services.OpenFoodService;
 import com.example.nicklastest.services.ProductService;
@@ -35,13 +38,23 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import static android.Manifest.permission.CAMERA;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.observers.DisposableObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -55,6 +68,9 @@ public class BarcodeScannerFragment extends Fragment {
     private SurfaceView surfaceView;
     private EditText editText;
     private TextView textView;
+
+    private final String BASE_URL = "http://10.0.2.2:5000/api/Product/";
+    private final String FOOD_URL = "https://world.openfoodfacts.org/api/v0/product/";
 
     private static final int CAMERA_REQUEST_CODE = 100;
 
@@ -79,6 +95,7 @@ public class BarcodeScannerFragment extends Fragment {
         } else {
             startCameraPreview(surfaceView, textView);
         }
+        getProduct("5701101210033");
 
         return view;
     }
@@ -99,6 +116,7 @@ public class BarcodeScannerFragment extends Fragment {
                 if (barcodes.size() > 0) {
                     String barcodeResult = barcodes.valueAt(0).displayValue;
                     textView.post(() -> textView.setText(barcodeResult));
+                    getProduct(barcodeResult);
                 }
             }
         });
@@ -130,85 +148,111 @@ public class BarcodeScannerFragment extends Fragment {
         });
     }
 
-    private void doesProductExist(String barCode) {
+    private void getProduct(String barCode) {
+        Retrofit retrofit = createRetrofit();
 
-        Retrofit retrofit1 = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/api/Product/")
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        ProductService productService = retrofit.create(ProductService.class);
 
-        Retrofit retrofit2 = new Retrofit.Builder()
-                .baseUrl("https://world.openfoodfacts.org/api/v0/product/")
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Log.d("GetById", "Product is being fetched");
 
-        ProductService productService = retrofit1.create(ProductService.class);
-        OpenFoodService openFoodService = retrofit2.create(OpenFoodService.class);
+        productService.GetById(barCode)
+                .subscribeOn(Schedulers.io()) // run on IO thread
+                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
+                .flatMap(product -> {
+                    Log.d("getProduct", "Product was found! : " + product.getProductName());
+                    return Single.just(product);
+                })
+                .onErrorResumeNext(error -> {
+                    if(error instanceof HttpException && ((HttpException) error).code() == 404) {
+                        Log.e("getProduct", "Product was not found!");
+                        return handleProductNotFoundError(productService, barCode);
+                    } else {
+                        error.printStackTrace();
+                        return Single.error(error);
+                    }
+                })
+                .flatMap(product -> {
+                    Log.d("getProduct", "Product has been created!");
+                    Log.d("getProduct", "Returning created object!");
+                    return Single.just(product);
+                })
+                .subscribe();
+    }
 
+    private Single<StaticProductResponse> handleProductNotFoundError(ProductService productService, String barCode) {
+        return productService.GetOpenFood(FOOD_URL +  barCode)
+                .subscribeOn(Schedulers.io()) // run on IO thread
+                .observeOn(AndroidSchedulers.mainThread()) // observe on Android main thread
+                .doOnError(error -> {
+                    Log.e("handleProductNotFound", "Error fetching product: " + error.getMessage());
+                })
+                .flatMap(response -> {
+                    if(response.getStatus() == 0) {
+                        Log.e("handleProductNotFoundError", "No product was found using barcode: " + barCode);
+                        return Single.error(new Exception());
+                    } else {
+                        Log.d("handleProductNotFoundError", "Product was found using OpenFoodFacts");
+                        return createProduct(productService, response);
+                    }
+                })
+                .onErrorResumeNext(error -> {
+                    Log.e("handleProductNotFound", "Error fetching product: " + error.getMessage());
+                    error.printStackTrace();
+                    return Single.error(error);
+                });
+    }
 
+    private Single<StaticProductResponse> createProduct(ProductService productService, DirectOpenProductResponse product) {
+        Product productInstance = product.getProduct();
+        Nutriments nutrimentsInstance = productInstance.getNutriments();
 
-        Disposable disposable = productService.GetById(barCode)
+        Log.d("product", String.valueOf(nutrimentsInstance.getCarbohydrates100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getEnergyKcal100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getEnergy100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getFat100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getFiber100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getProteins100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getSaturatedFat100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getSugars100g()));
+        Log.d("product", String.valueOf(nutrimentsInstance.getSalt100g()));
+
+        ProductRequest request = new ProductRequest(
+                product.getCode(),
+                productInstance.getGenericName(),
+                productInstance.getBrandOwner(),
+                nutrimentsInstance.getEnergyKcal100g(),
+                nutrimentsInstance.getFat100g(),
+                nutrimentsInstance.getSaturatedFat100g(),
+                nutrimentsInstance.getCarbohydrates100g(),
+                nutrimentsInstance.getSugars100g(),
+                nutrimentsInstance.getFiber100g(),
+                nutrimentsInstance.getProteins100g(),
+                nutrimentsInstance.getSalt100g()
+        );
+        Log.d("createProduct", "Product is being created");
+        return productService.Create(BASE_URL, request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<StaticProductResponse>() {
-                    @Override
-                    public void onNext(@io.reactivex.rxjava3.annotations.NonNull StaticProductResponse staticProductResponse) {
-                        // TODO: Apply the fetched data in a new UI
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                        if (e instanceof HttpException && ((HttpException) e).code() == 404) {
-                            Disposable disposable = openFoodService.GetByBarcode(barCode)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeWith(new DisposableObserver<DirectOpenProductResponse>() {
-                                        @Override
-                                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull DirectOpenProductResponse productResponse) {
-                                            // TODO: If it does exist create a new instance of the fetched data in own database
-                                            Disposable disposable = productService.Create(null)
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .subscribeWith(new DisposableObserver<StaticProductResponse>() {
-                                                        @Override
-                                                        public void onNext(@io.reactivex.rxjava3.annotations.NonNull StaticProductResponse staticProductResponse) {
-
-                                                        }
-
-                                                        @Override
-                                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-
-                                                        }
-
-                                                        @Override
-                                                        public void onComplete() {
-                                                            this.dispose();
-                                                        }
-                                                    });
-                                        }
-
-                                        @Override
-                                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
-                                            // TODO: If it doesn't exist do something
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-
-                                        }
-                                    });
-                        } else {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
+                .onErrorResumeNext(error -> {
+                    Log.e("createProduct", "Error creating new product: " + error.getMessage());
+                    error.printStackTrace();
+                    return Single.error(error);
                 });
+    }
+
+
+
+
+    private Retrofit createRetrofit() {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Nutriments.class, new NutrimentsDeserializer())
+                .create();
+
+        return new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
     }
 
     @Override
@@ -222,6 +266,44 @@ public class BarcodeScannerFragment extends Fragment {
                 // Permission denied, show an error message
                 Toast.makeText(getContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    public static class NutrimentsDeserializer implements JsonDeserializer<Nutriments> {
+        @Override
+        public Nutriments deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            Nutriments nutriments = new Nutriments();
+
+            nutriments.setCarbohydrates100g(jsonObject.get("carbohydrates_100g").getAsDouble());
+            nutriments.setEnergy100g(jsonObject.get("energy_100g").getAsDouble());
+            nutriments.setFat100g(jsonObject.get("fat_100g").getAsDouble());
+            nutriments.setProteins100g(jsonObject.get("proteins_100g").getAsDouble());
+            nutriments.setSaturatedFat100g(jsonObject.get("saturated-fat_100g").getAsDouble());
+            nutriments.setSalt100g(jsonObject.get("salt_100g").getAsDouble());
+            if(!jsonObject.has("energy-kcal_100g")) {
+                if(jsonObject.has("energy-kj_100g")) {
+                    nutriments.setEnergyKcal100g(jsonObject.get("energy-kj_100g").getAsDouble() * 0.239);
+                } else {
+                    nutriments.setEnergyKcal100g(0.0);
+
+                }
+            } else {
+                nutriments.setEnergyKcal100g(jsonObject.get("energy-kcal_100g").getAsDouble());
+            }
+
+            if(!jsonObject.has("sugars_100g")) {
+                nutriments.setSugars100g(0.0);
+            } else {
+                nutriments.setSugars100g(jsonObject.get("sugars_100g").getAsDouble());
+            }
+
+            if(!jsonObject.has("fiber_100g")) {
+                nutriments.setFiber100g(0.0);
+            } else {
+                nutriments.setFiber100g(jsonObject.get("fiber_100g").getAsDouble());
+            }
+            return nutriments;
         }
     }
 }

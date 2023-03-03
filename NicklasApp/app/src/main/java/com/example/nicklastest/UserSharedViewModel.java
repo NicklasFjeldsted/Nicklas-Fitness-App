@@ -119,8 +119,6 @@ public class UserSharedViewModel extends ViewModel {
         DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("dd/M/yyyy");
 
-        Log.d("LocalDate", LocalDate.parse(startDate, inputFormat).format(outputFormat));
-
         return LocalDate.parse(startDate, inputFormat).format(outputFormat);
     }
 

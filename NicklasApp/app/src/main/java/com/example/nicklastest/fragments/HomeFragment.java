@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -27,6 +28,8 @@ public class HomeFragment extends Fragment {
     private TextView textBaseGoal, textCurrentCalories, textBurnedCalories, textRemainingCalories, textStepCount, textExerciseCalories;
     private Button btnCalorieGoal, btnStep;
     private CircularProgressBar progressBar;
+
+    private CardView cardView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +59,18 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         assignVariables(view);
+
+        goalItemLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new NutritionFragment(), "C")
+                        .addToBackStack("C")
+                        .commit();
+            }
+        });
     }
 
     private void displayData() {
@@ -88,8 +103,6 @@ public class HomeFragment extends Fragment {
         goalItemLayout = v.findViewById(R.id.goal_item_layout);
         stepsItemLayout = v.findViewById(R.id.steps_item_layout);
         exerciseItemLayout = v.findViewById(R.id.exercise_item_layout);
-
-        btnCalorieGoal = goalItemLayout.findViewById(R.id.btn_calorie_goal_item);
 
         textBaseGoal = goalItemLayout.findViewById(R.id.text_base_goal);
         textCurrentCalories = goalItemLayout.findViewById(R.id.text_current_calories);
