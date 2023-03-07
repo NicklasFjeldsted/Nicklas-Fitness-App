@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserSharedViewModel;
+import com.example.nicklastest.viewmodels.UserSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;

@@ -1,6 +1,11 @@
 package com.example.nicklastest.fragments;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,19 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserSharedViewModel;
 import com.example.nicklastest.models.PlanProgress.DirectPlanProgressResponse;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
 import com.example.nicklastest.models.SizedProduct.DirectSizedProductResponse;
 import com.example.nicklastest.models.SizedProduct.SizedProductRequest;
 import com.example.nicklastest.models.UserPlan.DirectUserPlanResponse;
+import com.example.nicklastest.viewmodels.UserSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

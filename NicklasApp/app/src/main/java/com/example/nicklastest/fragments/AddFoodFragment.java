@@ -1,6 +1,12 @@
 package com.example.nicklastest.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,20 +18,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-
 import com.example.nicklastest.R;
-import com.example.nicklastest.UserSharedViewModel;
 import com.example.nicklastest.models.ProgressMeal.DirectProgressMealResponse;
 import com.example.nicklastest.models.ProgressMeal.ProgressMealPatchRequest;
 import com.example.nicklastest.models.ProgressMeal.StaticProgressMealResponse;
 import com.example.nicklastest.models.SizedProduct.SizedProductRequest;
 import com.example.nicklastest.services.ProgressMealService;
+import com.example.nicklastest.viewmodels.UserSharedViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

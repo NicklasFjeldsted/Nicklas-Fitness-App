@@ -1,18 +1,10 @@
 package com.example.nicklastest.fragments;
 
+import static android.Manifest.permission.CAMERA;
+
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -24,14 +16,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.nicklastest.MainActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import com.example.nicklastest.R;
 import com.example.nicklastest.models.OpenFoodData.DirectOpenProductResponse;
 import com.example.nicklastest.models.OpenFoodData.Nutriments;
 import com.example.nicklastest.models.OpenFoodData.Product;
 import com.example.nicklastest.models.Product.ProductRequest;
 import com.example.nicklastest.models.Product.StaticProductResponse;
-import com.example.nicklastest.services.OpenFoodService;
 import com.example.nicklastest.services.ProductService;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -47,16 +42,9 @@ import com.google.gson.JsonParseException;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-
-import static android.Manifest.permission.CAMERA;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.observers.DisposableObserver;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
@@ -95,8 +83,6 @@ public class BarcodeScannerFragment extends Fragment {
         } else {
             startCameraPreview(surfaceView, textView);
         }
-        getProduct("5701101210033");
-
         return view;
     }
 
@@ -116,7 +102,9 @@ public class BarcodeScannerFragment extends Fragment {
                 if (barcodes.size() > 0) {
                     String barcodeResult = barcodes.valueAt(0).displayValue;
                     textView.post(() -> textView.setText(barcodeResult));
+                    Log.d("getProduct", barcodeResult);
                     getProduct(barcodeResult);
+
                 }
             }
         });
@@ -153,7 +141,7 @@ public class BarcodeScannerFragment extends Fragment {
 
         ProductService productService = retrofit.create(ProductService.class);
 
-        Log.d("GetById", "Product is being fetched");
+        Log.d("getProduct", "Product is being fetched");
 
         productService.GetById(barCode)
                 .subscribeOn(Schedulers.io()) // run on IO thread
@@ -172,13 +160,11 @@ public class BarcodeScannerFragment extends Fragment {
                     }
                 })
                 .flatMap(product -> {
-                    Log.d("getProduct", "Product has been created!");
-                    Log.d("getProduct", "Returning created object!");
+                    Log.d("getProduct", "Product has been created, returning object!");
                     return Single.just(product);
                 })
                 .subscribe();
     }
-
     private Single<StaticProductResponse> handleProductNotFoundError(ProductService productService, String barCode) {
         return productService.GetOpenFood(FOOD_URL +  barCode)
                 .subscribeOn(Schedulers.io()) // run on IO thread
@@ -239,9 +225,6 @@ public class BarcodeScannerFragment extends Fragment {
                     return Single.error(error);
                 });
     }
-
-
-
 
     private Retrofit createRetrofit() {
         Gson gson = new GsonBuilder()

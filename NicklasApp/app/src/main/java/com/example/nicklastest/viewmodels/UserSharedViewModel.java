@@ -1,4 +1,4 @@
-package com.example.nicklastest;
+package com.example.nicklastest.viewmodels;
 
 import android.util.Log;
 

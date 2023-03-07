@@ -13,6 +13,7 @@ import com.example.nicklastest.fragments.HomeFragment;
 import com.example.nicklastest.fragments.NutritionFragment;
 import com.example.nicklastest.services.UserPlanService;
 import com.example.nicklastest.services.UserService;
+import com.example.nicklastest.viewmodels.UserSharedViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.concurrent.TimeUnit;
