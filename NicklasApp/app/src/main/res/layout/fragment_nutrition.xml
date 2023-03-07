@@ -3,17 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.NutritionFragment"
     android:orientation="vertical">
 
     <include
         android:id="@+id/include_nutrition_top"
-        layout="@layout/nutrition_top"/>
+        layout="@layout/nutrition_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/text_blue"
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/MyTabLayoutTextAppearance"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabTextColor="@color/black" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

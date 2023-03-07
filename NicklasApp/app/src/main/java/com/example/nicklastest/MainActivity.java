@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            fragmentManager.popBackStackImmediate("C", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentManager.popBackStackImmediate("previous", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
             super.onBackPressed();
         }

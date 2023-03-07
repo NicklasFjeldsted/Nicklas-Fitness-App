@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
                         .getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, new NutritionFragment(), "C")
-                        .addToBackStack("C")
+                        .addToBackStack("previous")
                         .commit();
             }
         });

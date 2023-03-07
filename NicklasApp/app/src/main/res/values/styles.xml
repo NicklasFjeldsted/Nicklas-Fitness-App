@@ -8,4 +8,8 @@
         <item name="android:textColorHint">@color/hint_text_color</item>
         <item name="android:textColorSecondary">@color/search_view_icon</item>
     </style>
+    <style name="MyTabLayoutTextAppearance" parent="TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 </resources>
